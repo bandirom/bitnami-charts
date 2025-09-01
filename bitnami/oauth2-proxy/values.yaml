@@ -306,8 +306,8 @@ ingress:
 ## @param image.pullSecrets OAuth2 Proxy image pull secrets
 ##
 image:
-  registry: docker.io
-  repository: bitnami/oauth2-proxy
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/oauth2-proxy
   tag: 7.12.0-debian-12-r0
   digest: ""
   ## Specify a imagePullPolicy
