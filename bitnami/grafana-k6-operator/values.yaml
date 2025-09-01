@@ -73,8 +73,8 @@ extraDeploy: []
 ## @param image.pullSecrets Grafana k6 Operator image pull secrets
 ##
 image:
-  registry: docker.io
-  repository: bitnami/grafana-k6-operator
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/grafana-k6-operator
   tag: 0.0.23-debian-12-r1
   digest: ""
   ## Specify a imagePullPolicy
@@ -97,8 +97,8 @@ image:
 ## @param starterImage.digest os-shell image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
 ##
 starterImage:
-  registry: docker.io
-  repository: bitnami/os-shell
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/os-shell
   tag: 12-debian-12-r51
   digest: ""
 ## Bitnami Grafana k6 image version
@@ -109,8 +109,8 @@ starterImage:
 ## @param runnerImage.digest Grafana k6 image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
 ##
 runnerImage:
-  registry: docker.io
-  repository: bitnami/grafana-k6
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/grafana-k6
   tag: 1.2.3-debian-12-r0
   digest: ""
 ## @param replicaCount Number of Grafana k6 Operator replicas to deploy
