@@ -158,8 +158,8 @@ controller:
   ## @param controller.image.pullSecrets Specify docker-registry secret names as an array
   ##
   image:
-    registry: docker.io
-    repository: bitnami/metallb-controller
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/metallb-controller
     tag: 0.15.2-debian-12-r7
     digest: ""
     ## Specify a imagePullPolicy
@@ -566,8 +566,8 @@ speaker:
   ## @param speaker.image.pullSecrets Specify docker-registry secret names as an array
   ##
   image:
-    registry: docker.io
-    repository: bitnami/metallb-speaker
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/metallb-speaker
     tag: 0.15.2-debian-12-r6
     digest: ""
     ## Specify a imagePullPolicy
@@ -942,8 +942,8 @@ speaker:
       ## @param speaker.frr.image.pullPolicy MetalLB Speaker image pull policy
       ## @param speaker.frr.image.pullSecrets Specify docker-registry secret names as an array
       ##
-      registry: docker.io
-      repository: bitnami/metallb-speaker
+      registry: registry.app-catalog.vmware.com
+      repository: eam/prd/containers/verified/common/minideb-bookworm/metallb-speaker
       tag: 0.15.2-debian-12-r6
       digest: ""
       pullPolicy: IfNotPresent
