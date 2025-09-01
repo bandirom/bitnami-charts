@@ -813,9 +813,9 @@ volumePermissions:
   ## @param volumePermissions.image.pullSecrets Init container volume-permissions image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/os-shell
-    tag: 12-debian-12-r50
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/os-shell
+    tag: 12-debian-12-r51
     digest: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -868,8 +868,8 @@ nginx:
   ## @param nginx.image.debug Enable NGINX image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/nginx
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/nginx
     tag: 1.29.1-debian-12-r0
     digest: ""
     ## Specify a imagePullPolicy
@@ -1243,9 +1243,9 @@ portal:
   ## @param portal.image.debug Enable Harbor Portal image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/harbor-portal
-    tag: 2.13.2-debian-12-r1
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/harbor-portal
+    tag: 2.13.2-debian-12-r2
     digest: ""
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -1612,8 +1612,8 @@ core:
   ## @param core.image.debug Enable Harbor Core image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/harbor-core
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/harbor-core
     tag: 2.13.2-debian-12-r3
     digest: ""
     ## Specify a imagePullPolicy
@@ -2046,8 +2046,8 @@ jobservice:
   ## @param jobservice.image.debug Enable Harbor Jobservice image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/harbor-jobservice
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/harbor-jobservice
     tag: 2.13.2-debian-12-r3
     digest: ""
     ## Specify a imagePullPolicy
@@ -2722,8 +2722,8 @@ registry:
     ## @param registry.server.image.debug Enable Harbor Registry image debug mode
     ##
     image:
-      registry: docker.io
-      repository: bitnami/harbor-registry
+      registry: registry.app-catalog.vmware.com
+      repository: eam/prd/containers/verified/common/minideb-bookworm/harbor-registry
       tag: 2.13.2-debian-12-r2
       digest: ""
       ## Specify a imagePullPolicy
@@ -2893,8 +2893,8 @@ registry:
     ## @param registry.controller.image.debug Enable Harbor Registryctl image debug mode
     ##
     image:
-      registry: docker.io
-      repository: bitnami/harbor-registryctl
+      registry: registry.app-catalog.vmware.com
+      repository: eam/prd/containers/verified/common/minideb-bookworm/harbor-registryctl
       tag: 2.13.2-debian-12-r3
       digest: ""
       ## Specify a imagePullPolicy
@@ -3058,8 +3058,8 @@ trivy:
   ## @param trivy.image.debug Enable Harbor Adapter Trivy image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/harbor-adapter-trivy
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/harbor-adapter-trivy
     tag: 2.13.2-debian-12-r2
     digest: ""
     ## Specify a imagePullPolicy
@@ -3490,8 +3490,8 @@ exporter:
   ## @param exporter.image.debug Specify if debug logs should be enabled
   ##
   image:
-    registry: docker.io
-    repository: bitnami/harbor-exporter
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/harbor-exporter
     tag: 2.13.2-debian-12-r2
     digest: ""
     ## Specify a imagePullPolicy
