@@ -90,8 +90,8 @@ diagnosticMode:
 ## @param image.debug Enable SonarQube(TM) image debug mode
 ##
 image:
-  registry: docker.io
-  repository: bitnami/sonarqube
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/sonarqube
   tag: 25.8.0-debian-12-r2
   digest: ""
   ## Specify a imagePullPolicy
@@ -722,8 +722,8 @@ caCerts:
   ## @param caCerts.image.pullSecrets OS Shell + Utility image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/os-shell
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/os-shell
     tag: 12-debian-12-r51
     digest: ""
     pullPolicy: IfNotPresent
@@ -811,8 +811,8 @@ plugins:
   ## @param plugins.image.pullSecrets OS Shell + Utility image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/os-shell
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/os-shell
     tag: 12-debian-12-r51
     digest: ""
     pullPolicy: IfNotPresent
@@ -920,8 +920,8 @@ volumePermissions:
   ## @param volumePermissions.image.pullSecrets OS Shell + Utility image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/os-shell
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/os-shell
     tag: 12-debian-12-r51
     digest: ""
     pullPolicy: IfNotPresent
@@ -982,8 +982,8 @@ sysctl:
   ## @param sysctl.image.pullSecrets OS Shell + Utility image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/os-shell
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/os-shell
     tag: 12-debian-12-r51
     digest: ""
     pullPolicy: IfNotPresent
@@ -1082,8 +1082,8 @@ metrics:
     ## @param metrics.jmx.image.pullSecrets Specify docker-registry secret names as an array
     ##
     image:
-      registry: docker.io
-      repository: bitnami/jmx-exporter
+      registry: registry.app-catalog.vmware.com
+      repository: eam/prd/containers/verified/common/minideb-bookworm/jmx-exporter
       tag: 1.4.0-debian-12-r0
       digest: ""
       pullPolicy: IfNotPresent
