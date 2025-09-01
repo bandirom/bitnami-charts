@@ -84,8 +84,8 @@ diagnosticMode:
 ## @param image.debug Set to true if you would like to see extra information on logs
 ##
 image:
-  registry: docker.io
-  repository: bitnami/nginx
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/nginx
   tag: 1.29.1-debian-12-r0
   digest: ""
   ## Specify a imagePullPolicy
@@ -514,8 +514,8 @@ cloneStaticSiteFromGit:
   ## @param cloneStaticSiteFromGit.image.pullSecrets Specify docker-registry secret names as an array
   ##
   image:
-    registry: docker.io
-    repository: bitnami/git
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/git
     tag: 2.51.0-debian-12-r0
     digest: ""
     ## Specify a imagePullPolicy
@@ -987,8 +987,8 @@ metrics:
   ## @param metrics.image.pullSecrets Specify docker-registry secret names as an array
   ##
   image:
-    registry: docker.io
-    repository: bitnami/nginx-exporter
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/nginx-exporter
     tag: 1.4.2-debian-12-r9
     digest: ""
     pullPolicy: IfNotPresent
