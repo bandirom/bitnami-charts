@@ -78,8 +78,8 @@ server:
   ## @param server.image.pullSecrets server image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/argo-workflow-cli
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/argo-workflow-cli
     tag: 3.7.1-debian-12-r1
     digest: ""
     ## Specify a imagePullPolicy
@@ -565,8 +565,8 @@ controller:
   ## @param controller.image.pullSecrets controller image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/argo-workflow-controller
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/argo-workflow-controller
     tag: 3.7.1-debian-12-r1
     digest: ""
     ## Specify a imagePullPolicy
@@ -1118,9 +1118,9 @@ executor:
   ## @param executor.image.pullSecrets executor image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/argo-workflow-exec
-    tag: 3.7.1-debian-12-r1
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/argo-workflow-exec
+    tag: 3.7.1-debian-12-r2
     digest: ""
     ## Specify a imagePullPolicy
     ## ref: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
