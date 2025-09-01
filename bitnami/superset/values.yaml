@@ -87,8 +87,8 @@ diagnosticMode:
 ## @param image.debug Enable Superset image debug mode
 ##
 image:
-  registry: docker.io
-  repository: bitnami/superset
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/superset
   tag: 5.0.0-debian-12-r71
   digest: ""
   ## Specify a imagePullPolicy
