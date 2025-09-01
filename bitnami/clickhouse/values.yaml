@@ -99,8 +99,8 @@ defaultInitContainers:
     ## @param defaultInitContainers.volumePermissions.image.pullSecrets "volume-permissions" init-containers' image pull secrets
     ##
     image:
-      registry: docker.io
-      repository: bitnami/os-shell
+      registry: registry.app-catalog.vmware.com
+      repository: eam/prd/containers/verified/common/minideb-bookworm/os-shell
       tag: 12-debian-12-r51
       digest: ""
       pullPolicy: IfNotPresent
@@ -165,9 +165,9 @@ defaultInitContainers:
 ## @param image.debug Enable ClickHouse image debug mode
 ##
 image:
-  registry: docker.io
-  repository: bitnami/clickhouse
-  tag: 25.7.5-debian-12-r0
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/clickhouse
+  tag: 25.8.1-debian-12-r0
   digest: ""
   ## Specify a imagePullPolicy
   ## ref: http://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
@@ -956,9 +956,9 @@ keeper:
   ## @param keeper.image.debug Enable ClickHouse image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/clickhouse-keeper
-    tag: 25.7.5-debian-12-r0
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/clickhouse-keeper
+    tag: 25.8.1-debian-12-r0
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
