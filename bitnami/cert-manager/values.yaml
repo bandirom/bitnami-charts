@@ -84,8 +84,8 @@ controller:
   ## @param controller.image.debug Controller image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/cert-manager
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/cert-manager
     tag: 1.18.2-debian-12-r5
     digest: ""
     ## Specify a imagePullPolicy
@@ -114,8 +114,8 @@ controller:
     ## @param controller.acmesolver.image.debug Controller image debug mode
     ##
     image:
-      registry: docker.io
-      repository: bitnami/acmesolver
+      registry: registry.app-catalog.vmware.com
+      repository: eam/prd/containers/verified/common/minideb-bookworm/acmesolver
       tag: 1.18.2-debian-12-r5
       digest: ""
       ## Specify a imagePullPolicy
@@ -495,8 +495,8 @@ webhook:
   ## @param webhook.image.debug Webhook image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/cert-manager-webhook
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/cert-manager-webhook
     tag: 1.18.2-debian-12-r5
     digest: ""
     ## Specify a imagePullPolicy
@@ -867,8 +867,8 @@ cainjector:
   ## @param cainjector.image.debug CAInjector image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/cainjector
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/cainjector
     tag: 1.18.2-debian-12-r5
     digest: ""
     ## Specify a imagePullPolicy
