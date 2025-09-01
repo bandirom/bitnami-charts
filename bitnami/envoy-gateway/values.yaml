@@ -89,8 +89,8 @@ extraDeploy: []
 ## @param image.pullSecrets Envoy Gateway image pull secrets
 ##
 image:
-  registry: docker.io
-  repository: bitnami/envoy-gateway
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/envoy-gateway
   tag: 1.5.0-debian-12-r1
   digest: ""
   ## Specify a imagePullPolicy
@@ -114,8 +114,8 @@ image:
 ## @param ratelimitImage.pullPolicy Rate Limit image pull policy
 ##
 ratelimitImage:
-  registry: docker.io
-  repository: bitnami/envoy-ratelimit
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/envoy-ratelimit
   tag: 2025.8.15-debian-12-r0
   digest: ""
   ## Specify a imagePullPolicy
@@ -130,8 +130,8 @@ ratelimitImage:
 ## @param envoyImage.digest Envoy image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
 ##
 envoyImage:
-  registry: docker.io
-  repository: bitnami/envoy
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/envoy
   tag: 1.35.1-debian-12-r0
   digest: ""
 ## @param replicaCount Number of Envoy Gateway replicas to deploy
