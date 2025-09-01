@@ -91,8 +91,8 @@ usePasswordFiles: true
 ## @param image.debug Enable Keycloak image debug mode
 ##
 image:
-  registry: docker.io
-  repository: bitnami/keycloak
+  registry: registry.app-catalog.vmware.com
+  repository: eam/prd/containers/verified/common/minideb-bookworm/keycloak
   tag: 26.3.3-debian-12-r0
   digest: ""
   ## Specify a imagePullPolicy
@@ -1001,8 +1001,8 @@ keycloakConfigCli:
   ## @param keycloakConfigCli.image.pullSecrets keycloak-config-cli container image pull secrets
   ##
   image:
-    registry: docker.io
-    repository: bitnami/keycloak-config-cli
+    registry: registry.app-catalog.vmware.com
+    repository: eam/prd/containers/verified/common/minideb-bookworm/keycloak-config-cli
     tag: 6.4.0-debian-12-r11
     digest: ""
     ## Specify a imagePullPolicy
