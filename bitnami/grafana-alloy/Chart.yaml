@@ -4,7 +4,7 @@
 annotations:
   images: |
     - name: configmap-reload
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/configmap-reload:0.15.0-debian-12-r12
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/configmap-reload:0.15.0-debian-12-r13
     - name: grafana-alloy
       image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/grafana-alloy:1.10.2-debian-12-r0
   licenses: Apache-2.0
@@ -35,4 +35,4 @@ maintainers:
 name: grafana-alloy
 sources:
 - https://github.com/bitnami/charts/tree/main/bitnami/grafana-alloy
-version: 1.0.9
+version: 1.0.10
