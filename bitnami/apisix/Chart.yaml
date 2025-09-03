@@ -6,7 +6,7 @@ annotations:
     - name: apisix
       image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/apisix:3.13.0-debian-12-r4
     - name: apisix-ingress-controller
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/apisix-ingress-controller:1.8.4-debian-12-r14
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/apisix-ingress-controller:1.8.4-debian-12-r15
     - name: os-shell
       image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/os-shell:12-debian-12-r51
   licenses: Apache-2.0
@@ -45,4 +45,4 @@ sources:
 - https://github.com/bitnami/charts/tree/main/bitnami/apisix
 - https://github.com/bitnami/charts/tree/main/bitnami/apisix-dashboard
 - https://github.com/bitnami/charts/tree/main/bitnami/apisix-ingress-controller
-version: 6.0.2
+version: 6.0.3
