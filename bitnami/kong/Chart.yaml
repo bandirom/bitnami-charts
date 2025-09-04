@@ -6,7 +6,7 @@ annotations:
     - name: kong
       image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/kong:3.9.1-debian-12-r10
     - name: kong-ingress-controller
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/kong-ingress-controller:3.5.1-debian-12-r3
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/kong-ingress-controller:3.5.1-debian-12-r4
   licenses: Apache-2.0
   tanzuCategory: application
 apiVersion: v2
@@ -45,4 +45,4 @@ maintainers:
 name: kong
 sources:
 - https://github.com/bitnami/charts/tree/main/bitnami/kong
-version: 15.4.24
+version: 15.4.25
