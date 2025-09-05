@@ -254,7 +254,7 @@ func GetContainerLogsOrDie(ctx context.Context, c cv1.PodsGetter, namespace stri
 // ContainerLogsContainPattern returns a boolean indicating if the container logs have a given pattern
 func ContainerLogsContainPattern(ctx context.Context, c cv1.PodsGetter, namespace string, podName string, containerName string, pattern string) (bool, error) {
 	containerLogs := GetContainerLogsOrDie(ctx, c, namespace, podName, containerName)
-	return containsPattern(containerLogs, pattern)
+	return ContainsPattern(containerLogs, pattern)
 }
 
 // interruptableReader is a scanner that reads from Kubernetes container logs

@@ -1,0 +1,45 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if and .Values.cleanupController.enabled (include "common.capabilities.apiVersions.has" ( dict "version" "autoscaling.k8s.io/v1/VerticalPodAutoscaler" "context" . )) .Values.cleanupController.autoscaling.vpa.enabled }}
+apiVersion: {{ include "common.capabilities.vpa.apiVersion" . }}
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ include "kyverno.cleanup-controller.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: cleanup-controller
+  {{- if or .Values.cleanupController.autoscaling.vpa.annotations .Values.commonAnnotations }}
+  {{- $annotations := include "common.tplvalues.merge" ( dict "values" ( list .Values.cleanupController.autoscaling.vpa.annotations .Values.commonAnnotations ) "context" . ) }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  resourcePolicy:
+    containerPolicies:
+    - containerName: kyverno
+      {{- with .Values.cleanupController.autoscaling.vpa.controlledResources }}
+      controlledResources:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cleanupController.autoscaling.vpa.maxAllowed }}
+      maxAllowed:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cleanupController.autoscaling.vpa.minAllowed }}
+      minAllowed:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  targetRef:
+    apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+    kind: Deployment
+    name: {{ include "kyverno.cleanup-controller.fullname" . }}
+  {{- if .Values.cleanupController.autoscaling.vpa.updatePolicy }}
+  updatePolicy:
+    {{- with .Values.cleanupController.autoscaling.vpa.updatePolicy.updateMode }}
+    updateMode: {{ . }}
+    {{- end }}
+  {{- end }}
+{{- end }}

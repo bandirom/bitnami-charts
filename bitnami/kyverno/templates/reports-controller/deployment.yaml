@@ -1,0 +1,202 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.reportsController.enabled }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "kyverno.reports-controller.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: reports-controller
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.reportsController.autoscaling.hpa.enabled }}
+  replicas: {{ .Values.reportsController.replicaCount }}
+  {{- end }}
+  {{- if .Values.reportsController.updateStrategy }}
+  strategy: {{- toYaml .Values.reportsController.updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.reportsController.podLabels .Values.commonLabels ) "context" . ) }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
+      app.kubernetes.io/part-of: kyverno
+      app.kubernetes.io/component: reports-controller
+  template:
+    metadata:
+      annotations:
+        {{- if not .Values.kyverno.existingConfigmap }}
+        checksum/config: {{ include (print $.Template.BasePath "/kyverno-configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if and (.Values.metrics.enabled) (not .Values.metrics.existingConfigmap) }}
+        checksum/metrics-config: {{ include (print $.Template.BasePath "/metrics-configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.reportsController.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
+        app.kubernetes.io/part-of: kyverno
+        app.kubernetes.io/component: reports-controller
+    spec:
+      serviceAccountName: {{ template "kyverno.reports-controller.serviceAccountName" . }}
+      {{- include "kyverno.imagePullSecrets" . | nindent 6 }}
+      automountServiceAccountToken: {{ .Values.reportsController.automountServiceAccountToken }}
+      {{- if .Values.reportsController.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.reportsController.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.reportsController.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.reportsController.podAffinityPreset "component" "reports-controller" "customLabels" $podLabels "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.reportsController.podAntiAffinityPreset "component" "reports-controller" "customLabels" $podLabels "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.reportsController.nodeAffinityPreset.type "key" .Values.reportsController.nodeAffinityPreset.key "values" .Values.reportsController.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.reportsController.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.reportsController.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.reportsController.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.reportsController.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.reportsController.priorityClassName }}
+      priorityClassName: {{ .Values.reportsController.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.reportsController.schedulerName }}
+      schedulerName: {{ .Values.reportsController.schedulerName }}
+      {{- end }}
+      {{- if .Values.reportsController.podSecurityContext.enabled }}
+      securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.reportsController.podSecurityContext "context" $) | nindent 8 }}
+      {{- end }}
+      enableServiceLinks: {{ .Values.reportsController.enableServiceLinks }}
+      initContainers:
+        {{- if .Values.reportsController.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: kyverno
+          image: {{ template "kyverno.reports-controller.image" . }}
+          imagePullPolicy: {{ .Values.reportsController.image.pullPolicy }}
+          {{- if .Values.reportsController.containerSecurityContext.enabled }}
+          securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.reportsController.containerSecurityContext "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.reportsController.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.reportsController.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.args "context" $) | nindent 12 }}
+          {{- else }}
+          args:
+            {{- $imagePullSecretNames := include "kyverno.imagePullSecrets.string" .}}
+            {{- if $imagePullSecretNames }}
+            - --imagePullSecrets={{ $imagePullSecretNames }}
+            {{- end }}
+            - --metricsPort={{ .Values.reportsController.containerPorts.metrics }}
+            {{- /* Taken from upstream Kyverno chart: https://github.com/kyverno/kyverno/blob/68f0f5755c701774eddcd6253c1f9a88d6d8f1e2/charts/kyverno/templates/reports-controller/deployment.yaml#L198 */}}
+            {{- include "kyverno.features.flags" (pick (mergeOverwrite (deepCopy .Values.kyverno.features) .Values.reportsController.featuresOverride)
+              "reporting"
+              "configMapCaching"
+              "deferredLoading"
+              "globalContext"
+              "logging"
+              "omitEvents"
+              "policyExceptions"
+            ) | nindent 12 }}
+          {{- if .Values.reportsController.extraArgs }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.extraArgs "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          env:
+          - name: KYVERNO_SERVICEACCOUNT_NAME
+            value: {{ template "kyverno.reports-controller.serviceAccountName" . }}
+          - name: KYVERNO_DEPLOYMENT
+            value: {{ template "kyverno.reports-controller.fullname" . }}
+          - name: INIT_CONFIG
+            value: {{ template "kyverno.config.configmapName" . }}
+          - name: METRICS_CONFIG
+            value: {{ template "kyverno.metrics-config.configmapName" . }}
+          - name: KYVERNO_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: KYVERNO_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: TUF_ROOT
+            value: {{ .Values.kyverno.tufMountPath }}
+            {{- if .Values.reportsController.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.reportsController.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.reportsController.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.reportsController.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.reportsController.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.reportsController.containerPorts.metrics }}
+              name: metrics
+            {{- if .Values.kyverno.extraContainerPorts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.kyverno.extraContainerPorts "context" $) | nindent 12 }}
+            {{- end }}
+          {{- if .Values.reportsController.resources }}
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.resources "context" $) | nindent 12 }}
+          {{- else if ne .Values.reportsController.resourcesPreset "none" }}
+          resources: {{- include "common.resources.preset" (dict "type" .Values.reportsController.resourcesPreset) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.reportsController.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.reportsController.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.reportsController.livenessProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: metrics
+          {{- end }}
+          {{- if .Values.reportsController.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.reportsController.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.reportsController.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /metrics
+              port: metrics
+          {{- end }}
+          {{- if .Values.reportsController.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.reportsController.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.reportsController.startupProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: metrics
+          {{- end }}
+          {{- if .Values.reportsController.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: {{ .Values.kyverno.tufMountPath }}
+              subPath: tuf-dir
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+          {{- if .Values.reportsController.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.reportsController.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.reportsController.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        {{- if .Values.reportsController.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.reportsController.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}

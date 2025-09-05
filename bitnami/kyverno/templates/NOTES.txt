@@ -1,0 +1,32 @@
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+** Please be patient while the chart is being deployed **
+
+Installed components:
+
+  * admission-controller
+  {{- if .Values.backgroundController.enabled }}
+  * background-controller
+  {{- end }}
+  {{- if .Values.cleanupController.enabled }}
+  * cleanup-controller
+  {{- end }}
+  {{- if .Values.reportsController.enabled }}
+  * reports-controller
+  {{- end }}
+
+Check the status of the pods by running this command:
+
+  kubectl get pods --namespace {{ include "common.names.namespace" . | quote }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Check the Kyverno documentation for instructions on how to deploy Policies:
+
+https://kyverno.io/docs/
+
+{{- include "kyverno.checkRollingTags" . }}
+{{- include "kyverno.validateValues" . }}
+{{- include "common.warnings.resources" (dict "sections" (list "admissionController" "backgroundController"  "cleanupController" "reportsController") "context" $) }}
+{{- include "common.warnings.modifiedImages" (dict "images" (list .Values.admissionController.image .Values.backgroundController.image .Values.cleanupController.image .Values.reportsController.image) "context" $) }}
+{{- include "common.errors.insecureImages" (dict "images" (list .Values.admissionController.image .Values.backgroundController.image .Values.cleanupController.image .Values.reportsController.image) "context" $) }}

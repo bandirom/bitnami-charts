@@ -1,0 +1,205 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.cleanupController.enabled }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "kyverno.cleanup-controller.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: cleanup-controller
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.cleanupController.autoscaling.hpa.enabled }}
+  replicas: {{ .Values.cleanupController.replicaCount }}
+  {{- end }}
+  {{- if .Values.cleanupController.updateStrategy }}
+  strategy: {{- toYaml .Values.cleanupController.updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.cleanupController.podLabels .Values.commonLabels ) "context" . ) }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
+      app.kubernetes.io/part-of: kyverno
+      app.kubernetes.io/component: cleanup-controller
+  template:
+    metadata:
+      annotations:
+        {{- if not .Values.kyverno.existingConfigmap }}
+        checksum/config: {{ include (print $.Template.BasePath "/kyverno-configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if and (.Values.metrics.enabled) (not .Values.metrics.existingConfigmap) }}
+        checksum/metrics-config: {{ include (print $.Template.BasePath "/metrics-configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.cleanupController.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
+        app.kubernetes.io/part-of: kyverno
+        app.kubernetes.io/component: cleanup-controller
+    spec:
+      serviceAccountName: {{ template "kyverno.cleanup-controller.serviceAccountName" . }}
+      {{- include "kyverno.imagePullSecrets" . | nindent 6 }}
+      automountServiceAccountToken: {{ .Values.cleanupController.automountServiceAccountToken }}
+      {{- if .Values.cleanupController.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.cleanupController.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.cleanupController.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cleanupController.podAffinityPreset "component" "cleanup-controller" "customLabels" $podLabels "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cleanupController.podAntiAffinityPreset "component" "cleanup-controller" "customLabels" $podLabels "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.cleanupController.nodeAffinityPreset.type "key" .Values.cleanupController.nodeAffinityPreset.key "values" .Values.cleanupController.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.cleanupController.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.cleanupController.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.cleanupController.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.cleanupController.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.cleanupController.priorityClassName }}
+      priorityClassName: {{ .Values.cleanupController.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.cleanupController.schedulerName }}
+      schedulerName: {{ .Values.cleanupController.schedulerName }}
+      {{- end }}
+      {{- if .Values.cleanupController.podSecurityContext.enabled }}
+      securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.cleanupController.podSecurityContext "context" $) | nindent 8 }}
+      {{- end }}
+      enableServiceLinks: {{ .Values.cleanupController.enableServiceLinks }}
+      initContainers:
+        {{- if .Values.cleanupController.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: kyverno
+          image: {{ template "kyverno.cleanup-controller.image" . }}
+          imagePullPolicy: {{ .Values.cleanupController.image.pullPolicy }}
+          {{- if .Values.cleanupController.containerSecurityContext.enabled }}
+          securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.cleanupController.containerSecurityContext "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.cleanupController.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.cleanupController.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.args "context" $) | nindent 12 }}
+          {{- else }}
+          args:
+            - --caSecretName={{ include "kyverno.tlsCASecretName" . }}
+            - --tlsSecretName={{ include "kyverno.cleanup-controller.tlsSecretName" . }}
+            - --servicePort={{ .Values.cleanupController.service.ports.https }}
+            - --webhookServerPort={{ .Values.cleanupController.containerPorts.https }}
+            - --metricsPort={{ .Values.cleanupController.containerPorts.metrics }}
+            {{- /* Taken from upstream Kyverno chart: https://github.com/kyverno/kyverno/blob/68f0f5755c701774eddcd6253c1f9a88d6d8f1e2/charts/kyverno/templates/cleanup-controller/deployment.yaml#L198 */}}
+            {{- include "kyverno.features.flags" (pick (mergeOverwrite (deepCopy .Values.kyverno.features) .Values.cleanupController.featuresOverride)
+              "deferredLoading"
+              "dumpPayload"
+              "globalContext"
+              "logging"
+              "ttlController"
+              "protectManagedResources"
+            ) | nindent 12 }}
+          {{- if .Values.cleanupController.extraArgs }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.extraArgs "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          env:
+            - name: INIT_CONFIG
+              value: {{ template "kyverno.config.configmapName" . }}
+            - name: KYVERNO_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KYVERNO_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KYVERNO_SERVICEACCOUNT_NAME
+              value: {{ template "kyverno.cleanup-controller.serviceAccountName" . }}
+            - name: KYVERNO_ROLE_NAME
+              value: {{ template "kyverno.cleanup-controller.fullname.namespace" . }}
+            - name: KYVERNO_SVC
+              value: {{ template "kyverno.cleanup-controller.fullname" . }}
+            - name: KYVERNO_DEPLOYMENT
+              value: {{ template "kyverno.cleanup-controller.fullname" . }}
+            - name: METRICS_CONFIG
+              value: {{ template "kyverno.metrics-config.configmapName" . }}
+            {{- if .Values.cleanupController.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.cleanupController.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.cleanupController.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.cleanupController.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.cleanupController.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.cleanupController.containerPorts.https }}
+              name: https
+            - containerPort: {{ .Values.cleanupController.containerPorts.metrics }}
+              name: metrics
+            {{- if .Values.kyverno.extraContainerPorts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.kyverno.extraContainerPorts "context" $) | nindent 12 }}
+            {{- end }}
+          {{- if .Values.cleanupController.resources }}
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.resources "context" $) | nindent 12 }}
+          {{- else if ne .Values.cleanupController.resourcesPreset "none" }}
+          resources: {{- include "common.resources.preset" (dict "type" .Values.cleanupController.resourcesPreset) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.cleanupController.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.cleanupController.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cleanupController.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health/liveness
+              port: https
+              scheme: HTTPS
+          {{- end }}
+          {{- if .Values.cleanupController.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.cleanupController.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cleanupController.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health/readiness
+              port: https
+              scheme: HTTPS
+          {{- end }}
+          {{- if .Values.cleanupController.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.cleanupController.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cleanupController.startupProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: https
+          {{- end }}
+          {{- if .Values.cleanupController.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+          {{- if .Values.cleanupController.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.cleanupController.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.cleanupController.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        {{- if .Values.cleanupController.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}

@@ -1,0 +1,185 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if and .Values.reportsController.enabled .Values.reportsController.rbac.create }}
+kind: ClusterRole
+apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
+metadata:
+  name: {{ include "kyverno.reports-controller.fullname.namespace" . }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: reports-controller
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+aggregationRule:
+  clusterRoleSelectors:
+    - matchLabels:
+        rbac.kyverno.io/aggregate-to-reports-controller: "true"
+    - matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 8 }}
+        app.kubernetes.io/part-of: kyverno
+        app.kubernetes.io/component: reports-controller
+---
+kind: ClusterRole
+apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
+metadata:
+  name: {{ printf "%s:core" (include "kyverno.reports-controller.fullname.namespace" .) | trunc 63 | trimSuffix "-" }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: reports-controller
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+rules:
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+  - apiGroups:
+      - ''
+    resources:
+      - configmaps
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - kyverno.io
+    resources:
+      - globalcontextentries
+      - globalcontextentries/status
+      - policyexceptions
+      - policies
+      - clusterpolicies
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+      - deletecollection
+  - apiGroups:
+      - policies.kyverno.io
+    resources:
+      - validatingpolicies
+      - validatingpolicies/status
+      - imagevalidatingpolicies
+      - imagevalidatingpolicies/status
+      - generatingpolicies
+      - mutatingpolicies
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+      - deletecollection
+  - apiGroups:
+      - policies.kyverno.io
+    resources:
+      - policyexceptions
+      - policyexceptions/status
+    verbs:
+      - get
+      - list
+      - watch
+{{- if .Values.kyverno.features.validatingAdmissionPolicyReports.enabled }}
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - validatingadmissionpolicies
+      - validatingadmissionpolicybindings
+    verbs:
+      - get
+      - list
+      - watch
+{{- end }}
+{{- if .Values.kyverno.features.mutatingAdmissionPolicyReports.enabled }}
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - mutatingadmissionpolicies
+      - mutatingadmissionpolicybindings
+    verbs:
+      - get
+      - list
+      - watch
+{{- end }}
+  - apiGroups:
+      - reports.kyverno.io
+    resources:
+      - ephemeralreports
+      - clusterephemeralreports
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+      - deletecollection
+  - apiGroups:
+      - wgpolicyk8s.io
+    resources:
+      - policyreports
+      - policyreports/status
+      - clusterpolicyreports
+      - clusterpolicyreports/status
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+      - deletecollection
+  - apiGroups:
+      - openreports.io
+    resources:
+      - reports
+      - reports/status
+      - clusterreports
+      - clusterreports/status
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+      - deletecollection
+  - apiGroups:
+      - ''
+      - events.k8s.io
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+{{- if .Values.reportsController.rbac.rules }}
+---
+kind: ClusterRole
+apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
+metadata:
+  name: {{ printf "%s:additional" (include "kyverno.reports-controller.fullname.namespace" .) | trunc 63 | trimSuffix "-" }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: reports-controller
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+rules: {{- include "common.tplvalues.render" ( dict "value" .Values.reportsController.rbac.rules "context" $ ) | nindent 2 }}
+{{- end }}
+{{- end }}

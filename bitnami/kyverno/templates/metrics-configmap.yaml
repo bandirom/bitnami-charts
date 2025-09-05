@@ -1,0 +1,72 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{/*
+  Adding the helper in configmap.yaml for better readability
+  Taken from upstream chart: https://github.com/kyverno/kyverno/blob/main/charts/kyverno/templates/config/configmap.yaml#L426
+*/}}
+{{- define "kyverno.metrics-config.default" -}}
+namespaces: |
+  {
+    "include": [],
+    "exclude": []
+  }
+bucketBoundaries: "0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 15, 20, 25, 30"
+metricsExposure: |
+  {
+    "kyverno_policy_execution_duration_seconds": {
+      "disabledLabelDimensions": [
+        "resource_namespace",
+        "resource_request_operation"
+      ]
+    },
+    "kyverno_admission_review_duration_seconds": {
+      "disabledLabelDimensions": [
+        "resource_namespace"
+      ]
+    },
+    "kyverno_policy_rule_info_total": {
+      "disabledLabelDimensions": [
+        "resource_namespace",
+        "policy_namespace"
+      ]
+    },
+    "kyverno_policy_results_total": {
+      "disabledLabelDimensions": [
+        "resource_namespace",
+        "policy_namespace"
+      ]
+    },
+    "kyverno_admission_requests_total": {
+      "disabledLabelDimensions": [
+        "resource_namespace"
+      ]
+    },
+    "kyverno_cleanup_controller_deletedobjects_total": {
+      "disabledLabelDimensions": [
+        "resource_namespace",
+        "policy_namespace"
+      ]
+    }
+  }
+{{- end -}}
+
+{{- if not .Values.metrics.existingConfigmap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-%s" (include "common.names.fullname" .) "metrics" | trunc 63 | trimSuffix "-" }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: metrics
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  {{- $defaultConfiguration := include "kyverno.metrics-config.default" . | fromYaml -}}
+  {{- $overrideConfiguration := include "common.tplvalues.render" (dict "value" .Values.metrics.overrideConfiguration "context" $) | fromYaml -}}
+  {{- mergeOverwrite $defaultConfiguration $overrideConfiguration | toYaml | nindent 2 }}
+{{- end }}

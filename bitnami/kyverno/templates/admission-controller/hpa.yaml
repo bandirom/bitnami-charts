@@ -1,0 +1,43 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.admissionController.autoscaling.hpa.enabled }}
+apiVersion: {{ include "common.capabilities.hpa.apiVersion" ( dict "context" $ ) }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "kyverno.admission-controller.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: admission-controller
+  {{- if or .Values.commonAnnotations .Values.admissionController.autoscaling.hpa.annotations }}
+  {{- $annotations := include "common.tplvalues.merge" ( dict "values" ( list .Values.admissionController.autoscaling.hpa.annotations .Values.commonAnnotations ) "context" . ) }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  scaleTargetRef:
+    apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+    kind: Deployment
+    name: {{ template "kyverno.admission-controller.fullname" . }}
+  minReplicas: {{ .Values.admissionController.autoscaling.hpa.minReplicas }}
+  maxReplicas: {{ .Values.admissionController.autoscaling.hpa.maxReplicas }}
+  metrics:
+    {{- if .Values.admissionController.autoscaling.hpa.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.admissionController.autoscaling.hpa.targetCPU }}
+    {{- end }}
+    {{- if .Values.admissionController.autoscaling.hpa.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.admissionController.autoscaling.hpa.targetMemory }}
+    {{- end }}
+{{- end }}

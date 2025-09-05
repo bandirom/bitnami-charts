@@ -8,7 +8,7 @@ import (
 )
 
 // containsPattern checks that a given pattern is inside an array of string
-func containsPattern(haystack []string, pattern string) (bool, error) {
+func ContainsPattern(haystack []string, pattern string) (bool, error) {
 	var err error
 
 	for _, s := range haystack {

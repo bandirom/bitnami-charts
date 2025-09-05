@@ -1,0 +1,25 @@
+# Copyright Broadcom, Inc. All Rights Reserved.
+# SPDX-License-Identifier: APACHE-2.0
+
+# We need to use a separate subchart to workaround this helm error:
+# Secret "sh.helm.release.v1.kyverno.v1" is invalid: data: Too long: must have at most 1048576 bytes
+annotations:
+  category: Analytics
+  licenses: Apache-2.0
+apiVersion: v2
+appVersion: 0.1.0
+description: Kyverno is a Kubernetes-native policy engine that automates security, compliance, and resource validation using declarative YAML policies.
+home: https://bitnami.com
+icon: https://dyltqmyl993wv.cloudfront.net/assets/stacks/kyverno/img/kyverno-stack-220x234.png
+keywords:
+- kyverno
+- policy
+- infrastructure
+kubeVersion: '>= 1.16.0-0'
+maintainers:
+- name: Broadcom, Inc. All Rights Reserved.
+  url: https://github.com/bitnami/charts
+name: kyverno-crds
+sources:
+- https://github.com/bitnami/charts-private/tree/main/bitnami/kyverno/charts/kyverno-crds
+version: 0.1.0

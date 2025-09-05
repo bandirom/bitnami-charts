@@ -1,0 +1,197 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.backgroundController.enabled }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "kyverno.background-controller.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: background-controller
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.backgroundController.autoscaling.hpa.enabled }}
+  replicas: {{ .Values.backgroundController.replicaCount }}
+  {{- end }}
+  {{- if .Values.backgroundController.updateStrategy }}
+  strategy: {{- toYaml .Values.backgroundController.updateStrategy | nindent 4 }}
+  {{- end }}
+  {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.backgroundController.podLabels .Values.commonLabels ) "context" . ) }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
+      app.kubernetes.io/part-of: kyverno
+      app.kubernetes.io/component: background-controller
+  template:
+    metadata:
+      annotations:
+        {{- if not .Values.kyverno.existingConfigmap }}
+        checksum/config: {{ include (print $.Template.BasePath "/kyverno-configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if and (.Values.metrics.enabled) (not .Values.metrics.existingConfigmap) }}
+        checksum/metrics-config: {{ include (print $.Template.BasePath "/metrics-configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.backgroundController.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
+        app.kubernetes.io/part-of: kyverno
+        app.kubernetes.io/component: background-controller
+    spec:
+      serviceAccountName: {{ template "kyverno.background-controller.serviceAccountName" . }}
+      {{- include "kyverno.imagePullSecrets" . | nindent 6 }}
+      automountServiceAccountToken: {{ .Values.backgroundController.automountServiceAccountToken }}
+      {{- if .Values.backgroundController.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backgroundController.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.backgroundController.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.backgroundController.podAffinityPreset "component" "background-controller" "customLabels" $podLabels "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.backgroundController.podAntiAffinityPreset "component" "background-controller" "customLabels" $podLabels "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.backgroundController.nodeAffinityPreset.type "key" .Values.backgroundController.nodeAffinityPreset.key "values" .Values.backgroundController.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.backgroundController.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.backgroundController.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backgroundController.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backgroundController.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.backgroundController.priorityClassName }}
+      priorityClassName: {{ .Values.backgroundController.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.backgroundController.schedulerName }}
+      schedulerName: {{ .Values.backgroundController.schedulerName }}
+      {{- end }}
+      {{- if .Values.backgroundController.podSecurityContext.enabled }}
+      securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.backgroundController.podSecurityContext "context" $) | nindent 8 }}
+      {{- end }}
+      enableServiceLinks: {{ .Values.backgroundController.enableServiceLinks }}
+      initContainers:
+        {{- if .Values.backgroundController.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: kyverno
+          image: {{ template "kyverno.background-controller.image" . }}
+          imagePullPolicy: {{ .Values.backgroundController.image.pullPolicy }}
+          {{- if .Values.backgroundController.containerSecurityContext.enabled }}
+          securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.backgroundController.containerSecurityContext "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.backgroundController.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.backgroundController.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.args "context" $) | nindent 12 }}
+          {{- else }}
+          args:
+            {{- $imagePullSecretNames := include "kyverno.imagePullSecrets.string" .}}
+            {{- if $imagePullSecretNames }}
+            - --imagePullSecrets={{ $imagePullSecretNames }}
+            {{- end }}
+            - --metricsPort={{ .Values.backgroundController.containerPorts.metrics }}
+            {{- /* Taken from upstream Kyverno chart: https://github.com/kyverno/kyverno/blob/68f0f5755c701774eddcd6253c1f9a88d6d8f1e2/charts/kyverno/templates/background-controller/deployment.yaml#L198 */}}
+            {{- include "kyverno.features.flags" (pick (mergeOverwrite (deepCopy .Values.kyverno.features) .Values.backgroundController.featuresOverride)
+              "reporting"
+              "configMapCaching"
+              "deferredLoading"
+              "globalContext"
+              "logging"
+              "omitEvents"
+              "policyExceptions"
+            ) | nindent 12 }}
+          {{- if .Values.backgroundController.extraArgs }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.extraArgs "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          env:
+          - name: KYVERNO_SERVICEACCOUNT_NAME
+            value: {{ template "kyverno.background-controller.serviceAccountName" . }}
+          - name: KYVERNO_DEPLOYMENT
+            value: {{ template "kyverno.background-controller.fullname" . }}
+          - name: INIT_CONFIG
+            value: {{ template "kyverno.config.configmapName" . }}
+          - name: METRICS_CONFIG
+            value: {{ template "kyverno.metrics-config.configmapName" . }}
+          - name: KYVERNO_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: KYVERNO_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+            {{- if .Values.backgroundController.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.backgroundController.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.backgroundController.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.backgroundController.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.backgroundController.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.backgroundController.containerPorts.metrics }}
+              name: metrics
+            {{- if .Values.kyverno.extraContainerPorts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.kyverno.extraContainerPorts "context" $) | nindent 12 }}
+            {{- end }}
+          {{- if .Values.backgroundController.resources }}
+          resources: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.resources "context" $) | nindent 12 }}
+          {{- else if ne .Values.backgroundController.resourcesPreset "none" }}
+          resources: {{- include "common.resources.preset" (dict "type" .Values.backgroundController.resourcesPreset) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.backgroundController.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.backgroundController.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.backgroundController.livenessProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: metrics
+          {{- end }}
+          {{- if .Values.backgroundController.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.backgroundController.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.backgroundController.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /metrics
+              port: metrics
+          {{- end }}
+          {{- if .Values.backgroundController.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.backgroundController.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.backgroundController.startupProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: metrics
+          {{- end }}
+          {{- if .Values.backgroundController.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+          {{- if .Values.backgroundController.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.backgroundController.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.backgroundController.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        {{- if .Values.backgroundController.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.backgroundController.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}

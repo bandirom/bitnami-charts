@@ -1,0 +1,60 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.cleanupController.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "kyverno.cleanup-controller.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: cleanup-controller
+  {{- if or .Values.commonAnnotations .Values.cleanupController.service.annotations .Values.metrics.enabled }}
+  {{- $annotations := include "common.tplvalues.merge" ( dict "values" ( list .Values.cleanupController.service.annotations .Values.commonAnnotations ) "context" . ) }}
+  {{- if .Values.metrics.enabled }}
+    {{- $defaultMetricsAnnotations := dict "prometheus.io/scrape" "true" "prometheus.io/port" (.Values.cleanupController.service.ports.http | toString) "prometheus.io/path" "/metrics" }}
+    {{- $annotations = include "common.tplvalues.merge" (dict "values" (list $annotations $defaultMetricsAnnotations) "context" .) }}
+  {{- end }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.cleanupController.service.type }}
+  {{- if .Values.cleanupController.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.cleanupController.service.sessionAffinity }}
+  {{- end }}
+  {{- if .Values.cleanupController.service.sessionAffinityConfig }}
+  sessionAffinityConfig: {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.service.sessionAffinityConfig "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if .Values.cleanupController.service.clusterIP }}
+  clusterIP: {{ .Values.cleanupController.service.clusterIP }}
+  {{- end }}
+  {{- if (or (eq .Values.cleanupController.service.type "LoadBalancer") (eq .Values.cleanupController.service.type "NodePort")) }}
+  externalTrafficPolicy: {{ .Values.cleanupController.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{ if eq .Values.cleanupController.service.type "LoadBalancer" }}
+  loadBalancerSourceRanges: {{ .Values.cleanupController.service.loadBalancerSourceRanges }}
+  {{ end }}
+  {{- if (and (eq .Values.cleanupController.service.type "LoadBalancer") (not (empty .Values.cleanupController.service.loadBalancerIP))) }}
+  loadBalancerIP: {{ .Values.cleanupController.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - name: https
+      port: {{ .Values.cleanupController.service.ports.https }}
+      targetPort: https
+      protocol: TCP
+      {{- if (and (or (eq .Values.cleanupController.service.type "NodePort") (eq .Values.cleanupController.service.type "LoadBalancer")) (not (empty .Values.cleanupController.service.nodePorts.http))) }}
+      nodePort: {{ .Values.cleanupController.service.nodePorts.https }}
+      {{- else if eq .Values.cleanupController.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.cleanupController.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.cleanupController.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.cleanupController.podLabels .Values.commonLabels ) "context" . ) }}
+  selector: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/part-of: kyverno
+    app.kubernetes.io/component: cleanup-controller
+{{- end }}
