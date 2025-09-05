@@ -8,7 +8,7 @@ annotations:
     - name: minio-client
       image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/minio-client:2025.7.21-debian-12-r4
     - name: minio-object-browser
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/minio-object-browser:2.0.2-debian-12-r5
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/minio-object-browser:2.0.4-debian-12-r0
     - name: os-shell
       image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/os-shell:12-debian-12-r51
   licenses: Apache-2.0
@@ -38,4 +38,4 @@ maintainers:
 name: minio
 sources:
 - https://github.com/bitnami/charts/tree/main/bitnami/minio
-version: 17.0.25
+version: 17.0.26
