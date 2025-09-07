@@ -4,7 +4,7 @@
 annotations:
   images: |
     - name: ghost
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/ghost:6.0.7-debian-12-r0
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/ghost:6.0.7-debian-12-r1
     - name: os-shell
       image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/os-shell:12-debian-12-r51
   licenses: Apache-2.0
@@ -42,4 +42,4 @@ maintainers:
 name: ghost
 sources:
 - https://github.com/bitnami/charts/tree/main/bitnami/ghost
-version: 25.0.7
+version: 25.0.8
