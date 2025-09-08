@@ -6,11 +6,11 @@ annotations:
     - name: os-shell
       image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/os-shell:12-debian-12-r51
     - name: rabbitmq
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/rabbitmq:4.1.3-debian-12-r1
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/rabbitmq:4.1.4-debian-12-r0
   licenses: Apache-2.0
   tanzuCategory: service
 apiVersion: v2
-appVersion: 4.1.3
+appVersion: 4.1.4
 dependencies:
 - name: common
   repository: oci://registry-1.docker.io/bitnamicharts
@@ -31,4 +31,4 @@ maintainers:
 name: rabbitmq
 sources:
 - https://github.com/bitnami/charts/tree/main/bitnami/rabbitmq
-version: 16.0.16
+version: 16.0.17
