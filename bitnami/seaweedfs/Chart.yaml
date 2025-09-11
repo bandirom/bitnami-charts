@@ -4,13 +4,13 @@
 annotations:
   images: |
     - name: mariadb
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/mariadb:12.0.2-debian-12-r0
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/mariadb:12.0.2-debian-12-r1
     - name: os-shell
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/os-shell:12-debian-12-r51
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/os-shell:12-debian-12-r52
     - name: postgresql
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/postgresql:17.6.0-debian-12-r5
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/postgresql:17.6.0-debian-12-r7
     - name: seaweedfs
-      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/seaweedfs:3.97.0-debian-12-r1
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/seaweedfs:3.97.0-debian-12-r2
   licenses: Apache-2.0
   tanzuCategory: clusterUtility
 apiVersion: v2
@@ -50,4 +50,4 @@ name: seaweedfs
 sources:
 - https://github.com/bitnami/charts/tree/main/bitnami/seawwedfs
 - https://github.com/bitnami/containers/tree/main/bitnami/seaweedfs
-version: 6.0.5
+version: 6.0.6
