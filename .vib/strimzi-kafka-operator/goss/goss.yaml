@@ -4,7 +4,7 @@
 file:
   /opt/bitnami/strimzi-kafka-operator/custom-config/log4j2.properties:
     exists: true
-    filetype: file
+    filetype: symlink
     contents:
       - /rootLogger.level = {{ .Vars.logLevel }}/'
 http:
