@@ -1,0 +1,86 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{/*
+Return the telegraf common configuration.
+ref: https://docs.influxdata.com/telegraf/v1.1/administration/configuration/
+*/}}
+{{- define "telegraf.configuration" -}}
+agent:
+  interval: "10s"
+  round_interval: true
+  metric_batch_size: 1000
+  metric_buffer_limit: 10000
+  collection_jitter: "0s"
+  flush_interval: "10s"
+  flush_jitter: "0s"
+  precision: ""
+  debug: false
+  quiet: false
+  logfile: ""
+processors:
+  - enum:
+      mapping:
+        fields:
+        - "status"
+        dest: "status_code"
+        value_mappings:
+          healthy: 1
+          problem: 2
+          critical: 3
+inputs:
+  - statsd:
+      service_address: ":{{ .Values.containerPorts.statsd }}"
+      percentiles:
+        - 50
+        - 95
+        - 99
+      metric_separator: "_"
+      allowed_pending_messages: 10000
+      percentile_limit: 1000
+outputs:
+  - health:
+      service_address: "http://:{{ .Values.containerPorts.health }}"
+      namepass:
+        - "internal_write"
+      contains:
+        - field: "buffer_size"
+  {{- if .Values.metrics.enabled }}
+  - prometheus_client:
+      listen: ":{{ .Values.containerPorts.prometheus }}"
+      expiration_interval: "60s"
+  {{- end }}
+{{- end -}}
+
+{{- if not .Values.existingConfigmap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: telegraf
+    app.kubernetes.io/part-of: telegraf
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  {{- $configuration := include "telegraf.configuration" . | fromYaml -}}
+  {{- if .Values.overrideConfiguration }}
+  {{- $overrideConfiguration := include "common.tplvalues.render" (dict "value" .Values.overrideConfiguration "context" .) | fromYaml }}
+  {{- $configuration = mustMergeOverwrite $configuration $overrideConfiguration }}
+  {{- end }}
+  telegraf.conf: |-
+    {{- if .Values.configuration }}
+    {{ .Values.configuration | nindent 4 }}
+    {{- else }}
+    {{ template "telegraf.config.global_tags" (get $configuration "global_tags") }}
+    {{ template "telegraf.config.agent" (get $configuration "agent") }}
+    {{ template "telegraf.config.processors" (get $configuration "processors") }}
+    {{ template "telegraf.config.aggregators" (get $configuration "aggregators") }}
+    {{ template "telegraf.config.outputs" (get $configuration "outputs") }}
+    {{ template "telegraf.config.inputs" (get $configuration "inputs") }}
+    {{- end }}
+{{- end }}

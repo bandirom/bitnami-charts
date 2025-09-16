@@ -1,0 +1,216 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if include "telegraf.service.exposePorts" . }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: telegraf
+    app.kubernetes.io/part-of: telegraf
+  {{- if or .Values.service.annotations .Values.commonAnnotations .Values.metrics.enabled .Values.metrics.annotations }}
+  {{- $annotations := include "common.tplvalues.merge" (dict "values" (list .Values.service.annotations .Values.commonAnnotations .Values.metrics.annotations) "context" .) }}
+  {{- if .Values.metrics.enabled }}
+  {{- $defaultMetricsAnnotations := dict "prometheus.io/scrape" "true" "prometheus.io/port" (.Values.service.ports.prometheus | quote) "prometheus.io/path" "/metrics" }}
+  {{- $annotations = include "common.tplvalues.merge" (dict "values" (list $annotations $defaultMetricsAnnotations) "context" .) }}
+  {{- end }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if and .Values.service.clusterIP (eq .Values.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.service.clusterIP }}
+  {{- end }}
+  {{- if .Values.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- end }}
+  {{- if .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig: {{- include "common.tplvalues.render" (dict "value" .Values.service.sessionAffinityConfig "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if or (eq .Values.service.type "LoadBalancer") (eq .Values.service.type "NodePort") }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if and (eq .Values.service.type "LoadBalancer") (not (empty .Values.service.loadBalancerSourceRanges)) }}
+  loadBalancerSourceRanges: {{ .Values.service.loadBalancerSourceRanges }}
+  {{- end }}
+  {{- if and (eq .Values.service.type "LoadBalancer") (not (empty .Values.service.loadBalancerIP)) }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    {{- if .Values.service.exposeCiscoTelemetry }}
+    - name: cisco-telemetry
+      port: {{ .Values.service.ports.cisco_telemetry }}
+      targetPort: cisco-telemetry
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.cisco_telemetry)) }}
+      nodePort: {{ .Values.service.nodePorts.cisco_telemetry }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeHealth }}
+    - name: health
+      port: {{ .Values.service.ports.health }}
+      targetPort: health
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.health)) }}
+      nodePort: {{ .Values.service.nodePorts.health }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeHttp }}
+    - name: http
+      port: {{ .Values.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.http)) }}
+      nodePort: {{ .Values.service.nodePorts.http }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeHttpV2 }}
+    - name: http-v2
+      port: {{ .Values.service.ports.http_v2 }}
+      targetPort: http-v2
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.http_v2)) }}
+      nodePort: {{ .Values.service.nodePorts.http_v2 }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeInfluxdb }}
+    - name: influxdb
+      port: {{ .Values.service.ports.influxdb }}
+      targetPort: influxdb
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.influxdb)) }}
+      nodePort: {{ .Values.service.nodePorts.influxdb }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeInfluxdbV2 }}
+    - name: influxdb-v2
+      port: {{ .Values.service.ports.influxdb_v2 }}
+      targetPort: influxdb-v2
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.influxdb_v2)) }}
+      nodePort: {{ .Values.service.nodePorts.influxdb_v2 }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeOtlpGrpc }}
+    - name: otlp-grpc
+      port: {{ .Values.service.ports.otlp_grpc }}
+      targetPort: otlp-grpc
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.otlp_grpc)) }}
+      nodePort: {{ .Values.service.nodePorts.otlp_grpc }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeOtlpHttp }}
+    - name: otlp-http
+      port: {{ .Values.service.ports.otlp_http }}
+      targetPort: otlp-http
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.otlp_http)) }}
+      nodePort: {{ .Values.service.nodePorts.otlp_http }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposePrometheus }}
+    - name: prometheus
+      port: {{ .Values.service.ports.prometheus }}
+      targetPort: prometheus
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.prometheus)) }}
+      nodePort: {{ .Values.service.nodePorts.prometheus }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeSocket }}
+    - name: socket
+      port: {{ .Values.service.ports.socket }}
+      targetPort: socket
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.socket)) }}
+      nodePort: {{ .Values.service.nodePorts.socket }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeStatsd }}
+    - name: statsd
+      port: {{ .Values.service.ports.statsd }}
+      targetPort: statsd
+      protocol: UDP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.statsd)) }}
+      nodePort: {{ .Values.service.nodePorts.statsd }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeSyslog }}
+    - name: syslog
+      port: {{ .Values.service.ports.syslog }}
+      targetPort: syslog
+      protocol: UDP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.syslog)) }}
+      nodePort: {{ .Values.service.nodePorts.syslog }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeTcp }}
+    - name: tcp
+      port: {{ .Values.service.ports.tcp }}
+      targetPort: tcp
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.tcp)) }}
+      nodePort: {{ .Values.service.nodePorts.tcp }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeUdp }}
+    - name: udp
+      port: {{ .Values.service.ports.udp }}
+      targetPort: udp
+      protocol: UDP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.udp)) }}
+      nodePort: {{ .Values.service.nodePorts.udp }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.exposeWebhooks }}
+    - name: webhooks
+      port: {{ .Values.service.ports.webhooks }}
+      targetPort: webhooks
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.webhooks)) }}
+      nodePort: {{ .Values.service.nodePorts.webhooks }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if .Values.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  {{- $podLabels := include "common.tplvalues.merge" (dict "values" (list .Values.podLabels .Values.commonLabels) "context" .) | fromYaml }}
+  selector: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: telegraf
+    app.kubernetes.io/part-of: telegraf
+{{- end }}

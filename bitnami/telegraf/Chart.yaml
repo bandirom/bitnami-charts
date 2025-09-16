@@ -1,0 +1,36 @@
+# Copyright Broadcom, Inc. All Rights Reserved.
+# SPDX-License-Identifier: APACHE-2.0
+
+annotations:
+  images: |
+    - name: telegraf
+      image: registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/telegraf:1.36.1-debian-12-r0
+  licenses: Apache-2.0
+  tanzuCategory: clusterUtility
+apiVersion: v2
+appVersion: 1.36.1
+dependencies:
+  - name: common
+    repository: oci://registry-1.docker.io/bitnamicharts
+    tags:
+      - bitnami-common
+    version: 2.x.x
+description: Telegraf is a server agent for collecting and sending metrics and events from databases, systems,
+  and IoT sensors. It is easily extendable with plugins for collection and output of data operations.
+home: https://github.com/influxdata/telegraf
+icon: https://dyltqmyl993wv.cloudfront.net/assets/stacks/telegraf/img/telegraf-stack-220x234.png
+keywords:
+  - telegraf
+  - monitoring
+  - collector
+  - timeseries
+maintainers:
+  - name: Broadcom, Inc. All Rights Reserved.
+    url: https://github.com/bitnami/charts-private
+name: telegraf
+sources:
+- https://github.com/bitnami/charts-private/tree/main/bitnami/telegraf
+- https://github.com/bitnami/containers/tree/main/bitnami/telegraf
+- https://github.com/influxdata/telegraf
+- https://github.com/influxdata/helm-charts/tree/master/charts/telegraf
+version: 0.1.0

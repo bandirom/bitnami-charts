@@ -1,0 +1,38 @@
+replicaCount: 2
+podSecurityContext:
+  enabled: true
+  fsGroup: 1002
+containerSecurityContext:
+  enabled: true
+  runAsUser: 1002
+serviceAccount:
+  create: true
+automountServiceAccountToken: true
+containerPorts:
+  http_v2: 9332
+  health: 9333
+  prometheus: 9334
+service:
+  exposeHttpV2: true
+  exposeHealth: true
+  exposePrometheus: true
+  ports:
+    http_v2: 80
+    health: 81
+    prometheus: 8080
+metrics:
+  enabled: true
+overrideConfiguration:
+  inputs:
+    - http_listener_v2:
+        service_address: ":9332"
+  outputs:
+    ## One or more check sub-tables should be defined for health output
+    - health:
+        service_address: "http://:9333"
+        namepass:
+          - "internal_write"
+        contains:
+          - field: "buffer_size"
+    - prometheus_client:
+        listen: ":9334"

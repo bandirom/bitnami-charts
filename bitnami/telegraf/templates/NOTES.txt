@@ -1,0 +1,269 @@
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+** Please be patient while the chart is being deployed **
+
+{{- if .Values.diagnosticMode.enabled }}
+The chart has been deployed in diagnostic mode. All probes have been disabled and the command has been overwritten with:
+
+  command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 4 }}
+  args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 4 }}
+
+Get the list of pods by executing:
+
+  kubectl get pods --namespace {{ include "common.names.namespace" . | quote }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Access the pod you want to debug by executing
+
+  kubectl exec --namespace {{ include "common.names.namespace" . | quote }} -ti <NAME OF THE POD> -- bash
+
+In order to replicate the container startup scripts execute this command:
+
+    /opt/bitnami/telegraf/bin/telegraf --config /opt/bitnami/telegraf/config/telegraf.conf
+
+{{- else if not (include "telegraf.service.exposePorts" .) }}
+
+The chart has been deployed without exposing any service. Telegraf is configured to expose ports for specific listener plugins.
+To expose a port, change the associated boolean flag from false to true under the service section in your values.yaml.
+
+For example, to expose the HTTP listener, you would set:
+
+  service:
+    exposeHttp: true
+
+Note this is needed to add the specific section in Telegraf configuration file.
+
+Get the list of pods by executing:
+
+  kubectl get pods --namespace {{ include "common.names.namespace" . | quote }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Access the pod you want to debug by executing
+
+  kubectl exec --namespace {{ include "common.names.namespace" . | quote }} -ti <NAME OF THE POD> -- bash
+
+{{- else }}
+
+Telegraf can be accessed via its exposed listener ports from within your cluster:
+
+  {{- if .Values.service.exposeCiscoTelemetry }}
+    Cisco Telemetry: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.cisco_telemetry }}
+  {{- end }}
+  {{- if .Values.service.exposeHealth }}
+    Health Check: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.health }}
+  {{- end }}
+  {{- if .Values.service.exposeHttp }}
+    HTTP Listener: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.http }}
+  {{- end }}
+  {{- if .Values.service.exposeHttpV2 }}
+    HTTP V2 Listener: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.http_v2 }}
+  {{- end }}
+  {{- if .Values.service.exposeInfluxdb }}
+    InfluxDB: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.influxdb }}
+  {{- end }}
+  {{- if .Values.service.exposeInfluxdbV2 }}
+    InfluxDB V2: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.influxdb_v2 }}
+  {{- end }}
+  {{- if .Values.service.exposeOtlpGrpc }}
+    OTLP gRPC: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.otlp_grpc }}
+  {{- end }}
+  {{- if .Values.service.exposeOtlpHttp }}
+    OTLP HTTP: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.otlp_http }}
+  {{- end }}
+  {{- if .Values.service.exposePrometheus }}
+    Prometheus Metrics: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.prometheus }}
+  {{- end }}
+  {{- if .Values.service.exposeSocket }}
+    Socket Listener: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.socket }}
+  {{- end }}
+  {{- if .Values.service.exposeStatsd }}
+    StatsD: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.statsd }}
+  {{- end }}
+  {{- if .Values.service.exposeSyslog }}
+    Syslog: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.syslog }}
+  {{- end }}
+  {{- if .Values.service.exposeTcp }}
+    TCP Listener: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.tcp }}
+  {{- end }}
+  {{- if .Values.service.exposeUdp }}
+    UDP Listener: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.udp }}
+  {{- end }}
+  {{- if .Values.service.exposeWebhooks }}
+    Webhooks: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.webhooks }}
+  {{- end }}
+
+To access Telegraf from outside the cluster execute the following commands:
+
+{{- if contains "LoadBalancer" .Values.service.type }}
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+      Watch the status with: 'kubectl get svc --namespace {{ include "common.names.namespace" . }} -w {{ template "common.names.fullname" . }}'
+
+  export SERVICE_IP=$(kubectl get svc --namespace {{ include "common.names.namespace" . }} {{ template "common.names.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
+  {{- range $name, $port := .Values.service.ports }}
+  {{- if eq $name "cisco_telemetry" }}
+  {{- if $.Values.service.exposeCiscoTelemetry }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "health" }}
+  {{- if $.Values.service.exposeHealth }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "http" }}
+  {{- if $.Values.service.exposeHttp }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "http_v2" }}
+  {{- if $.Values.service.exposeHttpV2 }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "influxdb" }}
+  {{- if $.Values.service.exposeInfluxdb }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "influxdb_v2" }}
+  {{- if $.Values.service.exposeInfluxdbV2 }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "otlp_grpc" }}
+  {{- if $.Values.service.exposeOtlpGrpc }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "otlp_http" }}
+  {{- if $.Values.service.exposeOtlpHttp }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "prometheus" }}
+  {{- if $.Values.service.exposePrometheus }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "socket" }}
+  {{- if $.Values.service.exposeSocket }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "statsd" }}
+  {{- if $.Values.service.exposeStatsd }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "syslog" }}
+  {{- if $.Values.service.exposeSyslog }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "tcp" }}
+  {{- if $.Values.service.exposeTcp }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "udp" }}
+  {{- if $.Values.service.exposeUdp }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- else if eq $name "webhooks" }}
+  {{- if $.Values.service.exposeWebhooks }}
+  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  {{- end }}
+  {{- end }}
+  {{- end }}
+{{- else if contains "ClusterIP" .Values.service.type }}
+
+  To access the Telegraf service via `port-forward`:
+
+  {{- if .Values.service.exposePrometheus }}
+  echo "Prometheus Client URL: http://127.0.0.1:9273/"
+  kubectl port-forward --namespace {{ include "common.names.namespace" . }} svc/{{ template "common.names.fullname" . }} 9273:{{ .Values.service.ports.prometheus }}
+  {{- end }}
+  {{- if .Values.service.exposeHttp }}
+  echo "HTTP Listener URL: http://127.0.0.1:8080/"
+  kubectl port-forward --namespace {{ include "common.names.namespace" . }} svc/{{ template "common.names.fullname" . }} 8080:{{ .Values.service.ports.http }}
+  {{- end }}
+
+  Note: You can port-forward multiple ports by repeating the forward command for each desired port.
+
+{{- else if contains "NodePort" .Values.service.type }}
+
+  export NODE_IP=$(kubectl get nodes --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  {{- range $name, $port := .Values.service.ports }}
+  {{- if eq $name "cisco_telemetry" }}
+    {{- if $.Values.service.exposeCiscoTelemetry }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "health" }}
+    {{- if $.Values.service.exposeHealth }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "http" }}
+    {{- if $.Values.service.exposeHttp }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "http_v2" }}
+    {{- if $.Values.service.exposeHttpV2 }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "influxdb" }}
+    {{- if $.Values.service.exposeInfluxdb }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "influxdb_v2" }}
+    {{- if $.Values.service.exposeInfluxdbV2 }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "otlp_grpc" }}
+    {{- if $.Values.service.exposeOtlpGrpc }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "otlp_http" }}
+    {{- if $.Values.service.exposeOtlpHttp }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "prometheus" }}
+    {{- if $.Values.service.exposePrometheus }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "socket" }}
+    {{- if $.Values.service.exposeSocket }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "statsd" }}
+    {{- if $.Values.service.exposeStatsd }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "syslog" }}
+    {{- if $.Values.service.exposeSyslog }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "tcp" }}
+    {{- if $.Values.service.exposeTcp }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "udp" }}
+    {{- if $.Values.service.exposeUdp }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- else if eq $name "webhooks" }}
+    {{- if $.Values.service.exposeWebhooks }}
+  export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
+  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+{{- end }}
+{{- end }}
+
+{{- include "common.warnings.rollingTag" .Values.image }}
+{{- include "common.warnings.resources" (dict "sections" (list "") "context" .) }}
+{{- include "common.warnings.modifiedImages" (dict "images" (list .Values.image) "context" .) }}
+{{- include "common.errors.insecureImages" (dict "images" (list .Values.image) "context" .) }}

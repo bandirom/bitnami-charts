@@ -1,0 +1,121 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.networkPolicy.enabled }}
+apiVersion: {{ include "common.capabilities.networkPolicy.apiVersion" . }}
+kind: NetworkPolicy
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+    app.kubernetes.io/component: telegraf
+    app.kubernetes.io/part-of: telegraf
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.podLabels .Values.commonLabels ) "context" . ) }}
+  podSelector:
+    matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
+      app.kubernetes.io/component: telegraf
+      app.kubernetes.io/part-of: telegraf
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    {{- if .Values.networkPolicy.allowExternalEgress }}
+    - {}
+    {{- else }}
+    - ports:
+        # Allow dns resolution
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+        # Allow access to kube-apiserver
+        {{- range $port := .Values.networkPolicy.kubeAPIServerPorts }}
+        - port: {{ $port }}
+        {{- end }}
+    {{- if .Values.networkPolicy.extraEgress }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.networkPolicy.extraEgress "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- end }}
+  ingress:
+    - ports:
+        {{- if .Values.service.exposeCiscoTelemetry }}
+        - port: {{ .Values.containerPorts.cisco_telemetry }}
+        {{- end }}
+        {{- if .Values.service.exposeHealth }}
+        - port: {{ .Values.containerPorts.health }}
+        {{- end }}
+        {{- if .Values.service.exposeHttp }}
+        - port: {{ .Values.containerPorts.http }}
+        {{- end }}
+        {{- if .Values.service.exposeHttpV2 }}
+        - port: {{ .Values.containerPorts.http_v2 }}
+        {{- end }}
+        {{- if .Values.service.exposeInfluxdb }}
+        - port: {{ .Values.containerPorts.influxdb }}
+        {{- end }}
+        {{- if .Values.service.exposeInfluxdbV2 }}
+        - port: {{ .Values.containerPorts.influxdb_v2 }}
+        {{- end }}
+        {{- if .Values.service.exposeOtlpGrpc }}
+        - port: {{ .Values.containerPorts.otlp_grpc }}
+        {{- end }}
+        {{- if .Values.service.exposeOtlpHttp }}
+        - port: {{ .Values.containerPorts.otlp_http }}
+        {{- end }}
+        {{- if .Values.service.exposePrometheus }}
+        - port: {{ .Values.containerPorts.prometheus }}
+        {{- end }}
+        {{- if .Values.service.exposeSocket }}
+        - port: {{ .Values.containerPorts.socket }}
+        {{- end }}
+        {{- if .Values.service.exposeStatsd }}
+        - port: {{ .Values.containerPorts.statsd }}
+        {{- end }}
+        {{- if .Values.service.exposeSyslog }}
+        - port: {{ .Values.containerPorts.syslog }}
+        {{- end }}
+        {{- if .Values.service.exposeTcp }}
+        - port: {{ .Values.containerPorts.tcp }}
+        {{- end }}
+        {{- if .Values.service.exposeUdp }}
+        - port: {{ .Values.containerPorts.udp }}
+        {{- end }}
+        {{- if .Values.service.exposeWebhooks }}
+        - port: {{ .Values.containerPorts.webhooks }}
+        {{- end }}
+        {{- range .Values.extraContainerPorts }}
+        - port: {{ .containerPort }}
+        {{- end }}
+      {{- if not .Values.networkPolicy.allowExternal }}
+      from:
+        - podSelector:
+            matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 14 }}
+        {{- if .Values.networkPolicy.addExternalClientAccess }}
+        - podSelector:
+            matchLabels:
+              {{ template "common.names.fullname" . }}: "true"
+        {{- end }}
+        {{- if .Values.networkPolicy.ingressPodMatchLabels }}
+        - podSelector:
+            matchLabels: {{- include "common.tplvalues.render" (dict "value" .Values.networkPolicy.ingressPodMatchLabels "context" $ ) | nindent 14 }}
+        {{- end }}
+        {{- if .Values.networkPolicy.ingressNSMatchLabels }}
+        - namespaceSelector:
+            matchLabels: {{- include "common.tplvalues.render" (dict "value" .Values.networkPolicy.ingressNSMatchLabels "context" $ ) | nindent 14 }}
+          {{- if .Values.networkPolicy.ingressNSPodMatchLabels }}
+          podSelector:
+            matchLabels:
+              matchLabels: {{- include "common.tplvalues.render" (dict "value" .Values.networkPolicy.ingressNSPodMatchLabels "context" $ ) | nindent 14 }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- if .Values.networkPolicy.extraIngress }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.networkPolicy.extraIngress "context" $ ) | nindent 4 }}
+    {{- end }}
+{{- end }}
