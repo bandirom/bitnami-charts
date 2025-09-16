@@ -23,7 +23,7 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
-Name of the Telegraf ConfigMap
+Name of the Telegraf (TM) ConfigMap
 */}}
 {{- define "telegraf.configmapName" -}}
 {{- if .Values.existingConfigmap -}}
@@ -43,7 +43,7 @@ Return the proper Docker Image Registry Secret Names
 
 
 {{/*
-Checks if any ports are configured to be exposed on the Telegraf service
+Checks if any ports are configured to be exposed on the Telegraf (TM) service
 */}}
 {{- define "telegraf.service.exposePorts" -}}
 {{- if or .Values.service.exposeCiscoTelemetry .Values.service.exposeHealth .Values.service.exposeHttp .Values.service.exposeHttpV2 .Values.service.exposeInfluxdb .Values.service.exposeInfluxdbV2 .Values.service.exposeOtlpGrpc .Values.service.exposeOtlpHttp .Values.service.exposePrometheus .Values.service.exposeSocket .Values.service.exposeStatsd .Values.service.exposeSyslog .Values.service.exposeTcp .Values.service.exposeUdp .Values.service.exposeWebhooks .Values.service.extraPorts }}

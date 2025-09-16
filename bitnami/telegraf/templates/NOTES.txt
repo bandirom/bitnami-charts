@@ -24,7 +24,7 @@ In order to replicate the container startup scripts execute this command:
 
 {{- else if not (include "telegraf.service.exposePorts" .) }}
 
-The chart has been deployed without exposing any service. Telegraf is configured to expose ports for specific listener plugins.
+The chart has been deployed without exposing any service. Telegraf (TM) is configured to expose ports for specific listener plugins.
 To expose a port, change the associated boolean flag from false to true under the service section in your values.yaml.
 
 For example, to expose the HTTP listener, you would set:
@@ -32,7 +32,7 @@ For example, to expose the HTTP listener, you would set:
   service:
     exposeHttp: true
 
-Note this is needed to add the specific section in Telegraf configuration file.
+Note this is needed to add the specific section in Telegraf (TM) configuration file.
 
 Get the list of pods by executing:
 
@@ -44,7 +44,7 @@ Access the pod you want to debug by executing
 
 {{- else }}
 
-Telegraf can be accessed via its exposed listener ports from within your cluster:
+Telegraf (TM) can be accessed via its exposed listener ports from within your cluster:
 
   {{- if .Values.service.exposeCiscoTelemetry }}
     Cisco Telemetry: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.cisco_telemetry }}
@@ -92,7 +92,7 @@ Telegraf can be accessed via its exposed listener ports from within your cluster
     Webhooks: {{ include "common.names.fullname" . }}.{{ include "common.names.namespace" . }}.svc.cluster.local:{{ .Values.service.ports.webhooks }}
   {{- end }}
 
-To access Telegraf from outside the cluster execute the following commands:
+To access Telegraf (TM) from outside the cluster execute the following commands:
 
 {{- if contains "LoadBalancer" .Values.service.type }}
 
@@ -103,69 +103,69 @@ To access Telegraf from outside the cluster execute the following commands:
   {{- range $name, $port := .Values.service.ports }}
   {{- if eq $name "cisco_telemetry" }}
   {{- if $.Values.service.exposeCiscoTelemetry }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "health" }}
   {{- if $.Values.service.exposeHealth }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "http" }}
   {{- if $.Values.service.exposeHttp }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "http_v2" }}
   {{- if $.Values.service.exposeHttpV2 }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "influxdb" }}
   {{- if $.Values.service.exposeInfluxdb }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "influxdb_v2" }}
   {{- if $.Values.service.exposeInfluxdbV2 }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "otlp_grpc" }}
   {{- if $.Values.service.exposeOtlpGrpc }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "otlp_http" }}
   {{- if $.Values.service.exposeOtlpHttp }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "prometheus" }}
   {{- if $.Values.service.exposePrometheus }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "socket" }}
   {{- if $.Values.service.exposeSocket }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "statsd" }}
   {{- if $.Values.service.exposeStatsd }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "syslog" }}
   {{- if $.Values.service.exposeSyslog }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "tcp" }}
   {{- if $.Values.service.exposeTcp }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "udp" }}
   {{- if $.Values.service.exposeUdp }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- else if eq $name "webhooks" }}
   {{- if $.Values.service.exposeWebhooks }}
-  echo "Telegraf {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$SERVICE_IP:{{ $port }}/"
   {{- end }}
   {{- end }}
   {{- end }}
 {{- else if contains "ClusterIP" .Values.service.type }}
 
-  To access the Telegraf service via `port-forward`:
+  To access the Telegraf (TM) service via `port-forward`:
 
   {{- if .Values.service.exposePrometheus }}
   echo "Prometheus Client URL: http://127.0.0.1:9273/"
@@ -185,77 +185,77 @@ To access Telegraf from outside the cluster execute the following commands:
   {{- if eq $name "cisco_telemetry" }}
     {{- if $.Values.service.exposeCiscoTelemetry }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "health" }}
     {{- if $.Values.service.exposeHealth }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "http" }}
     {{- if $.Values.service.exposeHttp }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "http_v2" }}
     {{- if $.Values.service.exposeHttpV2 }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "influxdb" }}
     {{- if $.Values.service.exposeInfluxdb }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "influxdb_v2" }}
     {{- if $.Values.service.exposeInfluxdbV2 }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "otlp_grpc" }}
     {{- if $.Values.service.exposeOtlpGrpc }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "otlp_http" }}
     {{- if $.Values.service.exposeOtlpHttp }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "prometheus" }}
     {{- if $.Values.service.exposePrometheus }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "socket" }}
     {{- if $.Values.service.exposeSocket }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "statsd" }}
     {{- if $.Values.service.exposeStatsd }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "syslog" }}
     {{- if $.Values.service.exposeSyslog }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "tcp" }}
     {{- if $.Values.service.exposeTcp }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "udp" }}
     {{- if $.Values.service.exposeUdp }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- else if eq $name "webhooks" }}
     {{- if $.Values.service.exposeWebhooks }}
   export NODE_PORT=$(kubectl get --namespace {{ include "common.names.namespace" $ }} -o jsonpath="{.spec.ports[?(@.port=={{ $port }})].nodePort}" services {{ template "common.names.fullname" $ }})
-  echo "Telegraf {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
+  echo "Telegraf (TM) {{ $name }} URL: http://$NODE_IP:$NODE_PORT/"
     {{- end }}
   {{- end }}
   {{- end }}

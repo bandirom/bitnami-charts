@@ -72,17 +72,17 @@ diagnosticMode:
   args:
     - infinity
 
-## @section Telegraf parameters
+## @section Telegraf (TM) parameters
 ##
-## Bitnami Telegraf image
+## Bitnami Telegraf (TM) image
 ## ref: https://hub.docker.com/r/bitnami/telegraf/tags/
-## @param image.registry [default: REGISTRY_NAME] Telegraf image registry
-## @param image.repository [default: REPOSITORY_NAME/telegraf] Telegraf image repository
-## @skip image.tag Telegraf image tag (immutable tags are recommended)
-## @param image.digest Telegraf image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
-## @param image.pullPolicy Telegraf image pull policy
-## @param image.pullSecrets Telegraf image pull secrets
-## @param image.debug Enable Telegraf image debug mode
+## @param image.registry [default: REGISTRY_NAME] Telegraf (TM) image registry
+## @param image.repository [default: REPOSITORY_NAME/telegraf] Telegraf (TM) image repository
+## @skip image.tag Telegraf (TM) image tag (immutable tags are recommended)
+## @param image.digest Telegraf (TM) image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
+## @param image.pullPolicy Telegraf (TM) image pull policy
+## @param image.pullSecrets Telegraf (TM) image pull secrets
+## @param image.debug Enable Telegraf (TM) image debug mode
 ##
 image:
   registry: registry.app-catalog.vmware.com
@@ -101,10 +101,10 @@ image:
   ##
   pullSecrets: []
   debug: false
-## @param replicaCount Number of Telegraf replicas to deploy
+## @param replicaCount Number of Telegraf (TM) replicas to deploy
 ##
 replicaCount: 1
-## @param overrideConfiguration Telegraf common configuration override.
+## @param overrideConfiguration Telegraf (TM) common configuration override.
 ## ref: https://docs.influxdata.com/telegraf/v1.1/administration/configuration/
 ## Use YAML format, then it's transformed to TOML format by the chart. e.g:
 ##   overrideConfiguration:
@@ -118,7 +118,7 @@ replicaCount: 1
 ##
 ##
 overrideConfiguration: {}
-## @param configuration Specify full content for Telegraf config file (auto-generated based on other parameters otherwise)
+## @param configuration Specify full content for Telegraf (TM) config file (auto-generated based on other parameters otherwise)
 ## ref: https://docs.influxdata.com/telegraf/v1.1/administration/configuration/
 ## Use TOML format. e.g:
 ##   configuration: |-
@@ -131,24 +131,24 @@ overrideConfiguration: {}
 ##         username = "user"
 ##
 configuration: ""
-## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for Telegraf
+## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for Telegraf (TM)
 ##
 existingConfigmap: ""
-## @param containerPorts.cisco_telemetry Telegraf cisco_telemetry container port for collecting Cisco telemetry data.
-## @param containerPorts.health Telegraf internal health check API container port.
-## @param containerPorts.http Telegraf HTTP container port.
-## @param containerPorts.http_v2 Telegraf HTTP_v2 container port.
-## @param containerPorts.influxdb Telegraf influxdb container port for receiving InfluxDB line protocol metrics.
-## @param containerPorts.influxdb_v2 Telegraf influxdb_v2 container port for receiving InfluxDB v2 line protocol metrics.
-## @param containerPorts.otlp_grpc Telegraf opentelemetry gRPC container port.
-## @param containerPorts.otlp_http Telegraf opentelemetry HTTP container port.
-## @param containerPorts.prometheus Telegraf prometheus container port for exposing metrics to be scraped.
-## @param containerPorts.statsd Telegraf statsd container port for collecting StatsD metrics.
-## @param containerPorts.syslog Telegraf syslog container port for collecting Syslog messages.
-## @param containerPorts.socket Telegraf socket container port.
-## @param containerPorts.tcp Telegraf tcp container port for receiving metrics via TCP.
-## @param containerPorts.udp Telegraf udp container port for receiving metrics via UDP.
-## @param containerPorts.webhooks Telegraf webhooks container port for receiving data from webhooks.
+## @param containerPorts.cisco_telemetry Telegraf (TM) cisco_telemetry container port for collecting Cisco telemetry data.
+## @param containerPorts.health Telegraf (TM) internal health check API container port.
+## @param containerPorts.http Telegraf (TM) HTTP container port.
+## @param containerPorts.http_v2 Telegraf (TM) HTTP_v2 container port.
+## @param containerPorts.influxdb Telegraf (TM) influxdb container port for receiving InfluxDB line protocol metrics.
+## @param containerPorts.influxdb_v2 Telegraf (TM) influxdb_v2 container port for receiving InfluxDB v2 line protocol metrics.
+## @param containerPorts.otlp_grpc Telegraf (TM) opentelemetry gRPC container port.
+## @param containerPorts.otlp_http Telegraf (TM) opentelemetry HTTP container port.
+## @param containerPorts.prometheus Telegraf (TM) prometheus container port for exposing metrics to be scraped.
+## @param containerPorts.statsd Telegraf (TM) statsd container port for collecting StatsD metrics.
+## @param containerPorts.syslog Telegraf (TM) syslog container port for collecting Syslog messages.
+## @param containerPorts.socket Telegraf (TM) socket container port.
+## @param containerPorts.tcp Telegraf (TM) tcp container port for receiving metrics via TCP.
+## @param containerPorts.udp Telegraf (TM) udp container port for receiving metrics via UDP.
+## @param containerPorts.webhooks Telegraf (TM) webhooks container port for receiving data from webhooks.
 ##
 containerPorts:
   cisco_telemetry: 57500
@@ -166,16 +166,16 @@ containerPorts:
   tcp: 9123
   udp: 9124
   webhooks: 8082
-## @param extraContainerPorts Optionally specify extra list of additional ports for Telegraf containers
+## @param extraContainerPorts Optionally specify extra list of additional ports for Telegraf (TM) containers
 ## e.g:
 ## extraContainerPorts:
 ##   - name: myservice
 ##     containerPort: 9090
 ##
 extraContainerPorts: []
-## Configure extra options for Telegraf containers' liveness and readiness probes
+## Configure extra options for Telegraf (TM) containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-## @param livenessProbe.enabled Enable livenessProbe on Telegraf containers
+## @param livenessProbe.enabled Enable livenessProbe on Telegraf (TM) containers
 ## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
 ## @param livenessProbe.periodSeconds Period seconds for livenessProbe
 ## @param livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
@@ -189,7 +189,7 @@ livenessProbe:
   timeoutSeconds: 2
   failureThreshold: 3
   successThreshold: 1
-## @param readinessProbe.enabled Enable readinessProbe on Telegraf containers
+## @param readinessProbe.enabled Enable readinessProbe on Telegraf (TM) containers
 ## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
 ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
 ## @param readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
@@ -203,7 +203,7 @@ readinessProbe:
   timeoutSeconds: 2
   failureThreshold: 3
   successThreshold: 1
-## @param startupProbe.enabled Enable startupProbe on Telegraf containers
+## @param startupProbe.enabled Enable startupProbe on Telegraf (TM) containers
 ## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
 ## @param startupProbe.periodSeconds Period seconds for startupProbe
 ## @param startupProbe.timeoutSeconds Timeout seconds for startupProbe
@@ -226,13 +226,13 @@ customReadinessProbe: {}
 ## @param customStartupProbe Custom startupProbe that overrides the default one
 ##
 customStartupProbe: {}
-## Telegraf resource requests and limits
+## Telegraf (TM) resource requests and limits
 ## ref: http://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
-## @param resourcesPreset Set Telegraf container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if resources is set (resources is recommended for production).
+## @param resourcesPreset Set Telegraf (TM) container resources according to one common preset (allowed values: none, nano, micro, small, medium, large, xlarge, 2xlarge). This is ignored if resources is set (resources is recommended for production).
 ## More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
 ##
 resourcesPreset: "nano"
-## @param resources Set Telegraf container requests and limits for different resources like CPU or memory (essential for production workloads)
+## @param resources Set Telegraf (TM) container requests and limits for different resources like CPU or memory (essential for production workloads)
 ## Example:
 ## resources:
 ##   requests:
@@ -245,11 +245,11 @@ resourcesPreset: "nano"
 resources: {}
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-## @param podSecurityContext.enabled Enable Telegraf pods' Security Context
-## @param podSecurityContext.fsGroupChangePolicy Set filesystem group change policy for Telegraf pods
-## @param podSecurityContext.sysctls Set kernel settings using the sysctl interface for Telegraf pods
-## @param podSecurityContext.supplementalGroups Set filesystem extra groups for Telegraf pods
-## @param podSecurityContext.fsGroup Set fsGroup in Telegraf pods' Security Context
+## @param podSecurityContext.enabled Enable Telegraf (TM) pods' Security Context
+## @param podSecurityContext.fsGroupChangePolicy Set filesystem group change policy for Telegraf (TM) pods
+## @param podSecurityContext.sysctls Set kernel settings using the sysctl interface for Telegraf (TM) pods
+## @param podSecurityContext.supplementalGroups Set filesystem extra groups for Telegraf (TM) pods
+## @param podSecurityContext.fsGroup Set fsGroup in Telegraf (TM) pods' Security Context
 ##
 podSecurityContext:
   enabled: true
@@ -259,16 +259,16 @@ podSecurityContext:
   fsGroup: 1001
 ## Configure Container Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-## @param containerSecurityContext.enabled Enabled Telegraf container' Security Context
-## @param containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in Telegraf container
-## @param containerSecurityContext.runAsUser Set runAsUser in Telegraf container' Security Context
-## @param containerSecurityContext.runAsGroup Set runAsGroup in Telegraf container' Security Context
-## @param containerSecurityContext.runAsNonRoot Set runAsNonRoot in Telegraf container' Security Context
-## @param containerSecurityContext.readOnlyRootFilesystem Set readOnlyRootFilesystem in Telegraf container' Security Context
-## @param containerSecurityContext.privileged Set privileged in Telegraf container' Security Context
-## @param containerSecurityContext.allowPrivilegeEscalation Set allowPrivilegeEscalation in Telegraf container' Security Context
-## @param containerSecurityContext.capabilities.drop List of capabilities to be dropped in Telegraf container
-## @param containerSecurityContext.seccompProfile.type Set seccomp profile in Telegraf container
+## @param containerSecurityContext.enabled Enabled Telegraf (TM) container' Security Context
+## @param containerSecurityContext.seLinuxOptions [object,nullable] Set SELinux options in Telegraf (TM) container
+## @param containerSecurityContext.runAsUser Set runAsUser in Telegraf (TM) container' Security Context
+## @param containerSecurityContext.runAsGroup Set runAsGroup in Telegraf (TM) container' Security Context
+## @param containerSecurityContext.runAsNonRoot Set runAsNonRoot in Telegraf (TM) container' Security Context
+## @param containerSecurityContext.readOnlyRootFilesystem Set readOnlyRootFilesystem in Telegraf (TM) container' Security Context
+## @param containerSecurityContext.privileged Set privileged in Telegraf (TM) container' Security Context
+## @param containerSecurityContext.allowPrivilegeEscalation Set allowPrivilegeEscalation in Telegraf (TM) container' Security Context
+## @param containerSecurityContext.capabilities.drop List of capabilities to be dropped in Telegraf (TM) container
+## @param containerSecurityContext.seccompProfile.type Set seccomp profile in Telegraf (TM) container
 ##
 containerSecurityContext:
   enabled: true
@@ -283,28 +283,28 @@ containerSecurityContext:
     drop: ["ALL"]
   seccompProfile:
     type: "RuntimeDefault"
-## @param command Override default Telegraf container command (useful when using custom images)
+## @param command Override default Telegraf (TM) container command (useful when using custom images)
 ##
 command: []
-## @param args Override default Telegraf container args (useful when using custom images)
+## @param args Override default Telegraf (TM) container args (useful when using custom images)
 ##
 args: []
-## @param automountServiceAccountToken Mount Service Account token in Telegraf pods
+## @param automountServiceAccountToken Mount Service Account token in Telegraf (TM) pods
 ##
 automountServiceAccountToken: false
-## @param hostAliases Telegraf pods host aliases
+## @param hostAliases Telegraf (TM) pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
 hostAliases: []
-## @param deploymentAnnotations Annotations for Telegraf deployment
+## @param deploymentAnnotations Annotations for Telegraf (TM) deployment
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 deploymentAnnotations: {}
-## @param podLabels Extra labels for Telegraf pods
+## @param podLabels Extra labels for Telegraf (TM) pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
 podLabels: {}
-## @param podAnnotations Annotations for Telegraf pods
+## @param podAnnotations Annotations for Telegraf (TM) pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations: {}
@@ -333,64 +333,64 @@ nodeAffinityPreset:
   ##   - e2e-az2
   ##
   values: []
-## @param affinity Affinity for Telegraf pods assignment
+## @param affinity Affinity for Telegraf (TM) pods assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ## NOTE: `podAffinityPreset`, `podAntiAffinityPreset`, and `nodeAffinityPreset` will be ignored when it's set
 ##
 affinity: {}
-## @param nodeSelector Node labels for Telegraf pods assignment
+## @param nodeSelector Node labels for Telegraf (TM) pods assignment
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
 ##
 nodeSelector: {}
-## @param tolerations Tolerations for Telegraf pods assignment
+## @param tolerations Tolerations for Telegraf (TM) pods assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
 tolerations: []
-## @param updateStrategy.type Telegraf deployment strategy type
+## @param updateStrategy.type Telegraf (TM) deployment strategy type
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
 ##
 updateStrategy:
   ## Can be set to RollingUpdate or Recreate
   ##
   type: RollingUpdate
-## @param priorityClassName Telegraf pods' priorityClassName
+## @param priorityClassName Telegraf (TM) pods' priorityClassName
 ##
 priorityClassName: ""
-## @param topologySpreadConstraints Topology Spread Constraints for Telegraf pod assignment spread across your cluster among failure-domains
+## @param topologySpreadConstraints Topology Spread Constraints for Telegraf (TM) pod assignment spread across your cluster among failure-domains
 ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
 ##
 topologySpreadConstraints: []
-## @param schedulerName Name of the k8s scheduler (other than default) for Telegraf pods
+## @param schedulerName Name of the k8s scheduler (other than default) for Telegraf (TM) pods
 ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
 ##
 schedulerName: ""
-## @param terminationGracePeriodSeconds Seconds Telegraf pods need to terminate gracefully
+## @param terminationGracePeriodSeconds Seconds Telegraf (TM) pods need to terminate gracefully
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
 ##
 terminationGracePeriodSeconds: ""
-## @param lifecycleHooks for Telegraf containers to automate configuration before or after startup
+## @param lifecycleHooks for Telegraf (TM) containers to automate configuration before or after startup
 ##
 lifecycleHooks: {}
-## @param extraEnvVars Array with extra environment variables to add to Telegraf containers
+## @param extraEnvVars Array with extra environment variables to add to Telegraf (TM) containers
 ## e.g:
 ## extraEnvVars:
 ##   - name: FOO
 ##     value: "bar"
 ##
 extraEnvVars: []
-## @param extraEnvVarsCM Name of existing ConfigMap containing extra env vars for Telegraf containers
+## @param extraEnvVarsCM Name of existing ConfigMap containing extra env vars for Telegraf (TM) containers
 ##
 extraEnvVarsCM: ""
-## @param extraEnvVarsSecret Name of existing Secret containing extra env vars for Telegraf containers
+## @param extraEnvVarsSecret Name of existing Secret containing extra env vars for Telegraf (TM) containers
 ##
 extraEnvVarsSecret: ""
-## @param extraVolumes Optionally specify extra list of additional volumes for the Telegraf pods
+## @param extraVolumes Optionally specify extra list of additional volumes for the Telegraf (TM) pods
 ##
 extraVolumes: []
-## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for the Telegraf containers
+## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for the Telegraf (TM) containers
 ##
 extraVolumeMounts: []
-## @param sidecars Add additional sidecar containers to the Telegraf pods
+## @param sidecars Add additional sidecar containers to the Telegraf (TM) pods
 ## e.g:
 ## sidecars:
 ##   - name: your-image-name
@@ -401,7 +401,7 @@ extraVolumeMounts: []
 ##         containerPort: 1234
 ##
 sidecars: []
-## @param initContainers Add additional init containers to the Telegraf pods
+## @param initContainers Add additional init containers to the Telegraf (TM) pods
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
 ## initContainers:
@@ -425,7 +425,7 @@ pdb:
 ## ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 ##
 autoscaling:
-  ## @param autoscaling.vpa.enabled Enable VPA for Telegraf pods
+  ## @param autoscaling.vpa.enabled Enable VPA for Telegraf (TM) pods
   ## @param autoscaling.vpa.annotations Annotations for VPA resource
   ## @param autoscaling.vpa.controlledResources VPA List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
   ## @param autoscaling.vpa.maxAllowed VPA Max allowed resources for the pod
@@ -443,7 +443,7 @@ autoscaling:
     ##
     updatePolicy:
       updateMode: Auto
-  ## @param autoscaling.hpa.enabled Enable HPA for Telegraf pods
+  ## @param autoscaling.hpa.enabled Enable HPA for Telegraf (TM) pods
   ## @param autoscaling.hpa.minReplicas Minimum number of replicas
   ## @param autoscaling.hpa.maxReplicas Maximum number of replicas
   ## @param autoscaling.hpa.targetCPU Target CPU utilization percentage
@@ -459,17 +459,17 @@ autoscaling:
 ## @section Traffic Exposure Parameters
 ##
 
-## Telegraf service parameters
+## Telegraf (TM) service parameters
 ##
 service:
-  ## @param service.type Telegraf service type
+  ## @param service.type Telegraf (TM) service type
   ##
   type: ClusterIP
   ## Service ports to expose
   ## @param service.exposeCiscoTelemetry Add the Cisco Telemetry MDT container port to the service.
-  ## @param service.exposeHealth Add the Telegraf internal health check API container port to the service.
-  ## @param service.exposeHttp Add the Telegraf http container port to the service.
-  ## @param service.exposeHttpV2 Add the Telegraf http_v2 container port to the service.
+  ## @param service.exposeHealth Add the Telegraf (TM) internal health check API container port to the service.
+  ## @param service.exposeHttp Add the Telegraf (TM) http container port to the service.
+  ## @param service.exposeHttpV2 Add the Telegraf (TM) http_v2 container port to the service.
   ## @param service.exposeInfluxdb Add the influxdb container port to the service.
   ## @param service.exposeInfluxdbV2 Add the influxdb_v2 container port to the service.
   ## @param service.exposeOtlpGrpc Add the opentelemetry gRPC container port to the service.
@@ -497,21 +497,21 @@ service:
   exposeTcp: false
   exposeUdp: false
   exposeWebhooks: false
-  ## @param service.ports.cisco_telemetry Telegraf cisco_telemetry service port for collecting Cisco telemetry data.
-  ## @param service.ports.health Telegraf internal health check API service port.
-  ## @param service.ports.http Telegraf HTTP service port (deprecated).
-  ## @param service.ports.http_v2 Telegraf HTTP service port.
-  ## @param service.ports.influxdb Telegraf influxdb service port for receiving InfluxDB line protocol metrics.
-  ## @param service.ports.influxdb_v2 Telegraf influxdb_v2 service port for receiving InfluxDB v2 line protocol metrics.
-  ## @param service.ports.otlp_grpc Telegraf opentelemetry gRPC service port.
-  ## @param service.ports.otlp_http Telegraf opentelemetry HTTP service port.
-  ## @param service.ports.prometheus Telegraf prometheus service port for exposing metrics to be scraped.
-  ## @param service.ports.statsd Telegraf statsd service port for collecting StatsD metrics.
-  ## @param service.ports.syslog Telegraf syslog service port for collecting Syslog messages.
-  ## @param service.ports.socket Telegraf socket service port.
-  ## @param service.ports.tcp Telegraf tcp service port for receiving metrics via TCP.
-  ## @param service.ports.udp Telegraf udp service port for receiving metrics via UDP.
-  ## @param service.ports.webhooks Telegraf webhooks service port for receiving data from webhooks.
+  ## @param service.ports.cisco_telemetry Telegraf (TM) cisco_telemetry service port for collecting Cisco telemetry data.
+  ## @param service.ports.health Telegraf (TM) internal health check API service port.
+  ## @param service.ports.http Telegraf (TM) HTTP service port (deprecated).
+  ## @param service.ports.http_v2 Telegraf (TM) HTTP service port.
+  ## @param service.ports.influxdb Telegraf (TM) influxdb service port for receiving InfluxDB line protocol metrics.
+  ## @param service.ports.influxdb_v2 Telegraf (TM) influxdb_v2 service port for receiving InfluxDB v2 line protocol metrics.
+  ## @param service.ports.otlp_grpc Telegraf (TM) opentelemetry gRPC service port.
+  ## @param service.ports.otlp_http Telegraf (TM) opentelemetry HTTP service port.
+  ## @param service.ports.prometheus Telegraf (TM) prometheus service port for exposing metrics to be scraped.
+  ## @param service.ports.statsd Telegraf (TM) statsd service port for collecting StatsD metrics.
+  ## @param service.ports.syslog Telegraf (TM) syslog service port for collecting Syslog messages.
+  ## @param service.ports.socket Telegraf (TM) socket service port.
+  ## @param service.ports.tcp Telegraf (TM) tcp service port for receiving metrics via TCP.
+  ## @param service.ports.udp Telegraf (TM) udp service port for receiving metrics via UDP.
+  ## @param service.ports.webhooks Telegraf (TM) webhooks service port for receiving data from webhooks.
   ##
   ports:
     cisco_telemetry: 57500
@@ -530,21 +530,21 @@ service:
     udp: 9124
     webhooks: 8082
   ## Node ports to expose
-  ## @param service.nodePorts.cisco_telemetry Node port for Telegraf cisco_telemetry.
-  ## @param service.nodePorts.health Node port for Telegraf internal health check API.
-  ## @param service.nodePorts.http Node port for Telegraf HTTP.
-  ## @param service.nodePorts.http_v2 Node port for Telegraf HTTP.
-  ## @param service.nodePorts.influxdb Node port for Telegraf influxdb.
-  ## @param service.nodePorts.influxdb_v2 Node port for Telegraf influxdb_v2.
-  ## @param service.nodePorts.otlp_grpc Node port for Telegraf opentelemetry gRPC.
-  ## @param service.nodePorts.otlp_http Node port for Telegraf opentelemetry HTTP.
-  ## @param service.nodePorts.prometheus Node port for Telegraf prometheus.
-  ## @param service.nodePorts.statsd Node port for Telegraf statsd.
-  ## @param service.nodePorts.syslog Node port for Telegraf syslog.
-  ## @param service.nodePorts.socket Node port for Telegraf socket.
-  ## @param service.nodePorts.tcp Node port for Telegraf tcp.
-  ## @param service.nodePorts.udp Node port for Telegraf udp.
-  ## @param service.nodePorts.webhooks Node port for Telegraf webhooks.
+  ## @param service.nodePorts.cisco_telemetry Node port for Telegraf (TM) cisco_telemetry.
+  ## @param service.nodePorts.health Node port for Telegraf (TM) internal health check API.
+  ## @param service.nodePorts.http Node port for Telegraf (TM) HTTP.
+  ## @param service.nodePorts.http_v2 Node port for Telegraf (TM) HTTP.
+  ## @param service.nodePorts.influxdb Node port for Telegraf (TM) influxdb.
+  ## @param service.nodePorts.influxdb_v2 Node port for Telegraf (TM) influxdb_v2.
+  ## @param service.nodePorts.otlp_grpc Node port for Telegraf (TM) opentelemetry gRPC.
+  ## @param service.nodePorts.otlp_http Node port for Telegraf (TM) opentelemetry HTTP.
+  ## @param service.nodePorts.prometheus Node port for Telegraf (TM) prometheus.
+  ## @param service.nodePorts.statsd Node port for Telegraf (TM) statsd.
+  ## @param service.nodePorts.syslog Node port for Telegraf (TM) syslog.
+  ## @param service.nodePorts.socket Node port for Telegraf (TM) socket.
+  ## @param service.nodePorts.tcp Node port for Telegraf (TM) tcp.
+  ## @param service.nodePorts.udp Node port for Telegraf (TM) udp.
+  ## @param service.nodePorts.webhooks Node port for Telegraf (TM) webhooks.
   ## NOTE: choose port between <30000-32767>
   ##
   nodePorts:
@@ -563,30 +563,30 @@ service:
     tcp: ""
     udp: ""
     webhooks: ""
-  ## @param service.clusterIP Telegraf service Cluster IP
+  ## @param service.clusterIP Telegraf (TM) service Cluster IP
   ## e.g.:
   ## clusterIP: None
   ##
   clusterIP: ""
-  ## @param service.loadBalancerIP Telegraf service Load Balancer IP
+  ## @param service.loadBalancerIP Telegraf (TM) service Load Balancer IP
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
   ##
   loadBalancerIP: ""
-  ## @param service.loadBalancerSourceRanges Telegraf service Load Balancer sources
+  ## @param service.loadBalancerSourceRanges Telegraf (TM) service Load Balancer sources
   ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
   ## e.g:
   ## loadBalancerSourceRanges:
   ##   - 10.10.10.0/24
   ##
   loadBalancerSourceRanges: []
-  ## @param service.externalTrafficPolicy Telegraf service external traffic policy
+  ## @param service.externalTrafficPolicy Telegraf (TM) service external traffic policy
   ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
   ##
   externalTrafficPolicy: Cluster
-  ## @param service.annotations Additional custom annotations for Telegraf service
+  ## @param service.annotations Additional custom annotations for Telegraf (TM) service
   ##
   annotations: {}
-  ## @param service.extraPorts Extra ports to expose in Telegraf service (normally used with the `sidecars` value)
+  ## @param service.extraPorts Extra ports to expose in Telegraf (TM) service (normally used with the `sidecars` value)
   ##
   extraPorts: []
   ## @param service.sessionAffinity Control where client requests go, to the same pod or round-robin
@@ -746,7 +746,7 @@ serviceAccount:
 ##
 metrics:
   ## @param metrics.enabled Enable the export of Prometheus metrics
-  ## It requires the Prometheus Client in Telegraf configuration:
+  ## It requires the Prometheus Client in Telegraf (TM) configuration:
   ##  outputs:
   ##  - prometheus_client:
   ##      listen: ":9273"

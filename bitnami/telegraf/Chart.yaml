@@ -16,7 +16,7 @@ dependencies:
   tags:
   - bitnami-common
   version: 2.x.x
-description: Telegraf is a server agent for collecting and sending metrics and events
+description: Telegraf (TM) is a server agent for collecting and sending metrics and events
   from databases, systems, and IoT sensors. It is easily extendable with plugins for
   collection and output of data operations.
 home: https://www.influxdata.com/time-series-platform/telegraf/
@@ -35,4 +35,4 @@ sources:
 - https://github.com/bitnami/containers/tree/main/bitnami/telegraf
 - https://github.com/influxdata/telegraf
 - https://github.com/influxdata/helm-charts/tree/master/charts/telegraf
-version: 0.1.2
+version: 0.1.3
