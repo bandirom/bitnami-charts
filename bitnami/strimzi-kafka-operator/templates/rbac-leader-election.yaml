@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: ClusterRole
 metadata:
-  name: {{ printf "%s-leader-election" (include "common.names.fullname.namespace" .) }}
+  name: strimzi-cluster-operator-leader-election
   labels: {{- include "common.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
     app.kubernetes.io/part-of: strimzi-kafka-operator
     app.kubernetes.io/component: operator
@@ -46,7 +46,7 @@ rules:
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: ClusterRoleBinding
 metadata:
-  name: {{ printf "%s-leader-election" (include "common.names.fullname.namespace" .) }}
+  name: {{ printf "%s-leader-election" (include "common.names.fullname" .) }}
   labels: {{- include "common.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
     app.kubernetes.io/part-of: strimzi-kafka-operator
     app.kubernetes.io/component: operator
@@ -56,7 +56,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ printf "%s-leader-election" (include "common.names.fullname.namespace" .) }}
+  name: strimzi-cluster-operator-leader-election
 subjects:
   - kind: ServiceAccount
     name: {{ template "strimzi.serviceAccountName" . }}

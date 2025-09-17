@@ -33,7 +33,7 @@ extraDeploy:
           type: persistent-claim
           size: 5Gi
           kraftMetadata: shared
-          deleteClaim: false
+          deleteClaim: true
 - |
   apiVersion: kafka.strimzi.io/v1beta2
   kind: KafkaNodePool
@@ -53,7 +53,7 @@ extraDeploy:
           type: persistent-claim
           size: 5Gi
           kraftMetadata: shared
-          deleteClaim: false
+          deleteClaim: true
 - |
   apiVersion: kafka.strimzi.io/v1beta2
   kind: Kafka

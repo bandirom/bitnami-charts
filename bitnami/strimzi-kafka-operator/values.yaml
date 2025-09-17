@@ -632,12 +632,14 @@ rbac:
   ##
   create: true
   ## @param rbac.operator.rules Custom RBAC rules to set for "operator" ClusterRole
-  ## @param rbac.global.rules Custom RBAC rules to set for "global" ClusterRole
+  ## @param rbac.global.rules Custom RBAC rules to set for "operator-global" ClusterRole
+  ## @param rbac.watched.rules Custom RBAC rules to set for "operator-watched" ClusterRole
   ## @param rbac.leaderElection.rules Custom RBAC rules to set for "leader-election" ClusterRole
-  ## @param rbac.watched.rules Custom RBAC rules to set for "watched" ClusterRole
   ## @param rbac.entityOperator.rules Custom RBAC rules to set for "entity-operator" ClusterRole
   ## @param rbac.kafkaBroker.rules Custom RBAC rules to set for "kafka-broker" ClusterRole
   ## @param rbac.kafkaClient.rules Custom RBAC rules to set for "kafka-client" ClusterRole
+  ## @param rbac.admin.rules Custom RBAC rules to set for "admin" ClusterRole
+  ## @param rbac.view.rules Custom RBAC rules to set for "view" Cluster
   ## e.g:
   ## rules:
   ##   xxx:
@@ -653,15 +655,19 @@ rbac:
     rules: []
   global:
     rules: []
-  leaderElection:
-    rules: []
   watched:
+    rules: []
+  leaderElection:
     rules: []
   entityOperator:
     rules: []
   kafkaBroker:
     rules: []
   kafkaClient:
+    rules: []
+  admin:
+    rules: []
+  view:
     rules: []
 ## ServiceAccount configuration
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/

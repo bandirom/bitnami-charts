@@ -1,0 +1,58 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.rbac.create }}
+apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
+kind: ClusterRole
+metadata:
+  name: strimzi-admin
+  labels: {{- include "common.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
+    app.kubernetes.io/part-of: strimzi-kafka-operator
+    app.kubernetes.io/component: operator
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" .) | nindent 4 }}
+  {{- end }}
+rules:
+  - apiGroups:
+      - "kafka.strimzi.io"
+    resources:
+      - kafkas
+      - kafkanodepools
+      - kafkanodepools/scale
+      - kafkaconnects
+      - kafkaconnects/scale
+      - kafkausers
+      - kafkatopics
+      - kafkabridges
+      - kafkabridges/scale
+      - kafkaconnectors
+      - kafkaconnectors/scale
+      - kafkamirrormaker2s
+      - kafkamirrormaker2s/scale
+      - kafkarebalances
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - delete
+      - patch
+      - update
+  - apiGroups:
+      - "core.strimzi.io"
+    resources:
+      - strimzipodsets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - delete
+      - patch
+      - update
+  {{- if .Values.rbac.admin.rules }}
+  {{- include "common.tplvalues.render" ( dict "value" .Values.rbac.admin.rules "context" .) | nindent 2 }}
+  {{- end }}
+{{- end }}

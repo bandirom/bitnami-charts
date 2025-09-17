@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: ClusterRole
 metadata:
-  name: {{ template "common.names.fullname.namespace" . }}
+  name: strimzi-cluster-operator
   labels: {{- include "common.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
     app.kubernetes.io/part-of: strimzi-kafka-operator
     app.kubernetes.io/component: operator
@@ -169,7 +169,7 @@ rules:
 apiVersion: {{ include "common.capabilities.rbac.apiVersion" . }}
 kind: ClusterRoleBinding
 metadata:
-  name: {{ template "common.names.fullname.namespace" . }}
+  name: {{ template "common.names.fullname" . }}
   labels: {{- include "common.labels.standard" (dict "customLabels" .Values.commonLabels "context" .) | nindent 4 }}
     app.kubernetes.io/part-of: strimzi-kafka-operator
     app.kubernetes.io/component: operator
@@ -179,7 +179,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ template "common.names.fullname.namespace" . }}
+  name: strimzi-cluster-operator
 subjects:
   - kind: ServiceAccount
     name: {{ template "strimzi.serviceAccountName" . }}
@@ -202,7 +202,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ template "common.names.fullname.namespace" $ }}
+  name: strimzi-cluster-operator
 subjects:
   - kind: ServiceAccount
     name: {{ template "strimzi.serviceAccountName" $ }}

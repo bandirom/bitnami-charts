@@ -371,12 +371,14 @@ As an alternative, use one of the preset configurations for pod affinity, pod an
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------- |
 | `rbac.create`                                 | Specifies whether RBAC resources should be created                                                     | `true`  |
 | `rbac.operator.rules`                         | Custom RBAC rules to set for "operator" ClusterRole                                                    | `[]`    |
-| `rbac.global.rules`                           | Custom RBAC rules to set for "global" ClusterRole                                                      | `[]`    |
+| `rbac.global.rules`                           | Custom RBAC rules to set for "operator-global" ClusterRole                                             | `[]`    |
+| `rbac.watched.rules`                          | Custom RBAC rules to set for "operator-watched" ClusterRole                                            | `[]`    |
 | `rbac.leaderElection.rules`                   | Custom RBAC rules to set for "leader-election" ClusterRole                                             | `[]`    |
-| `rbac.watched.rules`                          | Custom RBAC rules to set for "watched" ClusterRole                                                     | `[]`    |
 | `rbac.entityOperator.rules`                   | Custom RBAC rules to set for "entity-operator" ClusterRole                                             | `[]`    |
 | `rbac.kafkaBroker.rules`                      | Custom RBAC rules to set for "kafka-broker" ClusterRole                                                | `[]`    |
 | `rbac.kafkaClient.rules`                      | Custom RBAC rules to set for "kafka-client" ClusterRole                                                | `[]`    |
+| `rbac.admin.rules`                            | Custom RBAC rules to set for "admin" ClusterRole                                                       | `[]`    |
+| `rbac.view.rules`                             | Custom RBAC rules to set for "view" Cluster                                                            | `[]`    |
 | `serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                   | `true`  |
 | `serviceAccount.name`                         | The name of the ServiceAccount to use.                                                                 | `""`    |
 | `serviceAccount.annotations`                  | Additional Service Account annotations (evaluated as a template)                                       | `{}`    |
