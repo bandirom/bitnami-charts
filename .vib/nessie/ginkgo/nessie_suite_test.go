@@ -38,6 +38,13 @@ func TestNessie(t *testing.T) {
 }
 
 func createJob(ctx context.Context, c kubernetes.Interface, name, port, stmt string) error {
+	// Provided pull secrets
+	pullSecrets := []v1.LocalObjectReference{
+		{Name: "cp-pullsecret-0"},
+		{Name: "cp-pullsecret-1"},
+		{Name: "cp-pullsecret-2"},
+		{Name: "cp-pullsecret-3"},
+	}
 	securityContext := &v1.SecurityContext{
 		Privileged:               &[]bool{false}[0],
 		AllowPrivilegeEscalation: &[]bool{false}[0],
@@ -49,6 +56,7 @@ func createJob(ctx context.Context, c kubernetes.Interface, name, port, stmt str
 			Type: "RuntimeDefault",
 		},
 	}
+
 	job := &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: name,
@@ -59,12 +67,13 @@ func createJob(ctx context.Context, c kubernetes.Interface, name, port, stmt str
 		Spec: batchv1.JobSpec{
 			Template: v1.PodTemplateSpec{
 				Spec: v1.PodSpec{
-					RestartPolicy: "Never",
+					ImagePullSecrets: pullSecrets,
+					RestartPolicy:    "Never",
 					Containers: []v1.Container{
 						{
 							Name: "nessie",
 							// TODO: Change image
-							Image:           "docker.io/bitnami/nessie-utils:latest",
+							Image:           "registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/nessie-utils:latest",
 							Command:         []string{"java", "-jar", "/opt/bitnami/nessie-utils/nessie-cli/nessie-cli.jar", "-u", fmt.Sprintf("http://%s:%s/api/v2", dplName, port), "-c", stmt, "--non-ansi"},
 							SecurityContext: securityContext,
 						},

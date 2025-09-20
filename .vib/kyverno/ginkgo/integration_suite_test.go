@@ -48,6 +48,14 @@ func clusterConfigOrDie() *rest.Config {
 }
 
 func createTestingPodOrDie(ctx context.Context, c cv1.PodsGetter) *v1.Pod {
+	// Provided pull secrets
+	pullSecrets := []v1.LocalObjectReference{
+		{Name: "cp-pullsecret-0"},
+		{Name: "cp-pullsecret-1"},
+		{Name: "cp-pullsecret-2"},
+		{Name: "cp-pullsecret-3"},
+	}
+
 	scriptContent, _ := os.ReadFile("./scripts/kyverno-env-check.sh")
 	securityContext := &v1.SecurityContext{
 		Privileged:               &[]bool{false}[0],
@@ -70,10 +78,11 @@ func createTestingPodOrDie(ctx context.Context, c cv1.PodsGetter) *v1.Pod {
 			},
 		},
 		Spec: v1.PodSpec{
+			ImagePullSecrets: pullSecrets,
 			Containers: []v1.Container{
 				{
 					Name:       "vib-sample",
-					Image:      "docker.io/bitnami/os-shell",
+					Image:      "registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/os-shell:latest",
 					WorkingDir: "/tmp",
 					Command: []string{
 						"/bin/bash", "-c", "printenv SCRIPT | base64 -d | bash && sleep infinity"},

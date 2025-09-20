@@ -41,6 +41,14 @@ func TestNATS(t *testing.T) {
 }
 
 func createJob(ctx context.Context, c kubernetes.Interface, name string, port string, args ...string) error {
+	// Provided pull secrets
+	pullSecrets := []v1.LocalObjectReference{
+		{Name: "cp-pullsecret-0"},
+		{Name: "cp-pullsecret-1"},
+		{Name: "cp-pullsecret-2"},
+		{Name: "cp-pullsecret-3"},
+	}
+
 	securityContext := &v1.SecurityContext{
 		Privileged:               &[]bool{false}[0],
 		AllowPrivilegeEscalation: &[]bool{false}[0],
@@ -65,11 +73,12 @@ func createJob(ctx context.Context, c kubernetes.Interface, name string, port st
 		Spec: batchv1.JobSpec{
 			Template: v1.PodTemplateSpec{
 				Spec: v1.PodSpec{
-					RestartPolicy: "Never",
+					RestartPolicy:    "Never",
+					ImagePullSecrets: pullSecrets,
 					Containers: []v1.Container{
 						{
 							Name:    "nats",
-							Image:   "bitnami/natscli:latest",
+							Image:   "registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/natscli:latest",
 							Command: command,
 							Env: []v1.EnvVar{
 								{

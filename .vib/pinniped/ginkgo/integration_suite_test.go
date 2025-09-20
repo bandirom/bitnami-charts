@@ -54,6 +54,14 @@ func clusterConfigOrDie() *rest.Config {
 }
 
 func createTestingPodOrDie(ctx context.Context, c cv1.PodsGetter) *v1.Pod {
+	// Name of the provided pull secrets
+	pullSecrets := []v1.LocalObjectReference{
+		{Name: "cp-pullsecret-0"},
+		{Name: "cp-pullsecret-1"},
+		{Name: "cp-pullsecret-2"},
+		{Name: "cp-pullsecret-3"},
+	}
+
 	kubeconfigContent, _ := os.ReadFile(*kubeconfig)
 	scriptContent, _ := os.ReadFile("./scripts/pinniped-auth.sh")
 
@@ -66,10 +74,11 @@ func createTestingPodOrDie(ctx context.Context, c cv1.PodsGetter) *v1.Pod {
 			},
 		},
 		Spec: v1.PodSpec{
+			ImagePullSecrets: pullSecrets,
 			Containers: []v1.Container{
 				{
 					Name:       "vib-cli",
-					Image:      "docker.io/bitnami/pinniped-cli",
+					Image:      "registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/pinniped-cli:latest",
 					WorkingDir: "/tmp",
 					Command: []string{
 						"/bin/bash", "-c", "printenv PINNIPED_SCRIPT | base64 -d > pinniped-script.sh && chmod +x pinniped-script.sh && ./pinniped-script.sh && sleep infinity"},

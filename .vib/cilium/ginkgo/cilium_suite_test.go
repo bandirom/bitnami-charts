@@ -166,6 +166,14 @@ func createAPIMockCiliumNetworkPolicy(ctx context.Context, dC dynamic.Interface)
 }
 
 func createAPIMockClientJob(ctx context.Context, c kubernetes.Interface, jobName string, fsGroup, user *int64, podLabels map[string]string) error {
+	// Provided pull secrets
+	pullSecrets := []v1.LocalObjectReference{
+		{Name: "cp-pullsecret-0"},
+		{Name: "cp-pullsecret-1"},
+		{Name: "cp-pullsecret-2"},
+		{Name: "cp-pullsecret-3"},
+	}
+
 	podSecurityContext := &v1.PodSecurityContext{
 		FSGroup: fsGroup,
 	}
@@ -186,12 +194,13 @@ func createAPIMockClientJob(ctx context.Context, c kubernetes.Interface, jobName
 					Labels: podLabels,
 				},
 				Spec: v1.PodSpec{
-					RestartPolicy:   "Never",
-					SecurityContext: podSecurityContext,
+					ImagePullSecrets: pullSecrets,
+					RestartPolicy:    "Never",
+					SecurityContext:  podSecurityContext,
 					Containers: []v1.Container{
 						{
 							Name:            "curl",
-							Image:           "docker.io/bitnami/os-shell:latest",
+							Image:           "registry.app-catalog.vmware.com/eam/prd/containers/verified/common/minideb-bookworm/os-shell:latest",
 							Command:         []string{"bash", "-ec"},
 							Args:            []string{"curl --connect-timeout 5 -X GET -H 'Accept: application/json' http://api-mock:8080/v1/mock/foo"},
 							SecurityContext: containerSecurityContext,
