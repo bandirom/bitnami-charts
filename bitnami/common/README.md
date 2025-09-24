@@ -197,8 +197,6 @@ The following table lists the helpers available in the library which are scoped 
 | -------------------- | ------------------- | ------------------------------------------------------------------------------- |
 | `common.fips.config` | Configure FIPS Mode | `dict "tech" "openssl|java|golang" "fips" .Values.fips "global" .Values.global` |
 
-> FIPS parameters only have effect if the `global.bsi` parameter is set and you are using images from the [Bitnami Secure Images catalog](https://www.arrow.com/globalecs/uk/products/bitnami-secure-images/).
-
 ## Special input schemas
 
 ### ImageRoot
