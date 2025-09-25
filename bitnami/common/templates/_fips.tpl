@@ -15,7 +15,7 @@ Get FIPS environment variable value for the given tech
         {{- printf "The common.fips.config method can only provide configuration for: %s" $availableTechs | fail -}}
     {{- end -}}
     {{- $tech := get (.fips) .tech -}}
-    {{- $value := $tech | default (.global).fipsDefault -}}
+    {{- $value := $tech | default (.global).defaultFips -}}
     {{- if empty $value -}}
         {{- printf "Please configure a value for 'fips.%s' or 'global.defaultFips'" .tech | fail -}}
     {{- else -}}
