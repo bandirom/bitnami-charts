@@ -570,6 +570,10 @@ Find more information about how to deal with common errors related to Bitnami's 
 
 ## Upgrading
 
+### To 16.0.0
+
+This major updates the PostgreSQL subchart to its newest major, 18.0.0. Follow the [official instructions](https://www.postgresql.org/docs/18/upgrading.html) to upgrade to 18.x.
+
 ### To 15.1.0
 
 This version introduces image verification for security purposes. To disable it, set `global.security.allowInsecureImages` to `true`. More details at [GitHub issue](https://github.com/bitnami/charts/issues/30850).
