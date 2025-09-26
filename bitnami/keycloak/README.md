@@ -730,6 +730,10 @@ Find more information about how to deal with common errors related to Bitnami's 
 
 ## Upgrading
 
+### To 26.0.0
+
+This major updates the PostgreSQL subchart to its newest major, 18.0.0. Follow the [official instructions](https://www.postgresql.org/docs/18/upgrading.html) to upgrade to 18.x.
+
 ### To 25.0.0
 
 This version stops relying on the [Keycloak Metrics SPI](https://github.com/aerogear/keycloak-metrics-spi) to expose metrics and, relies on the native metrics exposed by Keycloak via [the management interface](https://www.keycloak.org/server/management-interface) and removes SPI Truststore related parameters given this functionality was deprecated on Keycloak as described in this [GitHub discussion](https://github.com/keycloak/keycloak/discussions/28007).
